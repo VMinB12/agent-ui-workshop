@@ -10,6 +10,7 @@ Developers can clone this project and quickly get started and iterate on the age
 The focus is on clear architecture, best practices, and a smooth development experience, rather than on specific agent capabilities or UI polish.
 Avoid overly complex abstractions or optimizations that might obscure the core concepts of building an AI chatbot with Vercel's AI tools.
 Keep file size to a minimum and prioritize readability and ease of understanding for developers new to this space.
+If a file exceeds ~100 lines, consider whether it can be split into smaller, more focused modules.
 
 ## Out of scope
 
@@ -135,3 +136,4 @@ We keep several documentation files for the main libraries we use:
 - Shadcn/ui: docs/shadcn.md
 
 Consider reading these to get a better understanding of the libraries we use. These files can be large, so you may want to grep to find relevant sections.
+Prefer the MCP tool for these libraries if it is available.
