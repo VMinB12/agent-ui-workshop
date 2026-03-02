@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev:frontend": "next dev",
+    "dev:pydantic": "cd agent && uv run --env-file=../.env.local uvicorn agent.server:app --port 8000 --reload",
+    "dev": "concurrently --kill-others-on-fail --names frontend,pydantic --prefix-colors cyan,green \"pnpm run dev:frontend\" \"pnpm run dev:pydantic\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
