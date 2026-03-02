@@ -4,8 +4,11 @@ import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
 import { useId, useMemo, useState } from 'react'
 
+const CHAT_API_BASE_URL = process.env.NEXT_PUBLIC_CHAT_API_BASE_URL
 const CHAT_API_BASE_PATH = process.env.NEXT_PUBLIC_CHAT_API_BASE_PATH ?? '/api/chat'
 const CHAT_ROUTE_PATH = process.env.NEXT_PUBLIC_CHAT_ROUTE_PATH ?? '/chat'
+
+const isAbsoluteUrl = (value: string): boolean => /^https?:\/\//.test(value)
 
 const normalizePath = (value: string): string => {
   if (!value.startsWith('/')) {
@@ -17,7 +20,12 @@ const normalizePath = (value: string): string => {
 const stripTrailingSlash = (value: string): string => (value.endsWith('/') ? value.slice(0, -1) : value)
 
 const buildChatEndpoint = (conversationId: string): string => {
-  const base = stripTrailingSlash(normalizePath(CHAT_API_BASE_PATH))
+  const defaultDevBaseUrl = 'http://127.0.0.1:8000/api/chat'
+  const fallbackBase = process.env.NODE_ENV === 'development' ? defaultDevBaseUrl : CHAT_API_BASE_PATH
+  const configuredBase = CHAT_API_BASE_URL?.trim() || fallbackBase
+  const base = isAbsoluteUrl(configuredBase)
+    ? stripTrailingSlash(configuredBase)
+    : stripTrailingSlash(normalizePath(configuredBase))
   const route = normalizePath(CHAT_ROUTE_PATH)
   return `${base}${route}/${conversationId}`
 }
