@@ -23,6 +23,10 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  --color-chat-user: var(--chat-user);
+  --color-chat-user-foreground: var(--chat-user-foreground);
+  --color-chat-user-border: var(--chat-user-border);
+  --color-chat-tool-border: var(--chat-tool-border);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -73,6 +77,10 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
+  --chat-user: oklch(0.91 0.08 78);
+  --chat-user-foreground: oklch(0.3 0.04 52);
+  --chat-user-border: oklch(0.8 0.09 78);
+  --chat-tool-border: oklch(0.9 0.01 255);
   --sidebar: oklch(0.984 0.003 247.858);
   --sidebar-foreground: oklch(0.129 0.042 264.695);
   --sidebar-primary: oklch(0.208 0.042 265.755);
@@ -107,6 +115,10 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
+  --chat-user: oklch(0.44 0.08 70);
+  --chat-user-foreground: oklch(0.98 0.01 90);
+  --chat-user-border: oklch(0.56 0.09 72);
+  --chat-tool-border: oklch(0.42 0.02 255);
   --sidebar: oklch(0.208 0.042 265.755);
   --sidebar-foreground: oklch(0.984 0.003 247.858);
   --sidebar-primary: oklch(0.488 0.243 264.376);

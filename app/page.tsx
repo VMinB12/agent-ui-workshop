@@ -5,10 +5,8 @@ import { DefaultChatTransport } from 'ai'
 import {
   Conversation,
   ConversationContent,
-  ConversationDownload,
   ConversationEmptyState,
   ConversationScrollButton,
-  type ConversationMessage,
 } from '@/components/ai-elements/conversation'
 import { Message, MessageContent, MessageResponse } from '@/components/ai-elements/message'
 import { Persona, type PersonaState } from '@/components/ai-elements/persona'
@@ -51,19 +49,6 @@ const isToolPart = (part: unknown): part is ToolPart =>
   'output' in part &&
   'errorText' in part
 
-const toConversationRole = (role: string): ConversationMessage['role'] => {
-  if (role === 'assistant' || role === 'user' || role === 'system' || role === 'data' || role === 'tool') {
-    return role
-  }
-  return 'assistant'
-}
-
-const getMessageText = (parts: ReadonlyArray<unknown>): string =>
-  parts
-    .filter(isTextPart)
-    .map((part) => part.text)
-    .join('')
-
 export default function Home() {
   const [input, setInput] = useState('')
   const [conversationIdParam, setConversationIdParam] = useQueryState('conversationId')
@@ -85,15 +70,6 @@ export default function Home() {
     transport: new DefaultChatTransport({ api: endpoint }),
   })
 
-  const downloadableMessages = useMemo<ConversationMessage[]>(
-    () =>
-      messages.map((message) => ({
-        content: getMessageText(message.parts),
-        role: toConversationRole(message.role),
-      })),
-    [messages],
-  )
-
   const lastAssistantMessageId = useMemo(() => {
     for (let i = messages.length - 1; i >= 0; i -= 1) {
       if (messages[i].role !== 'user') {
@@ -114,7 +90,7 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="min-h-0 flex-1 overflow-hidden rounded-lg border bg-card">
+      <section className="min-h-0 flex-1 overflow-hidden rounded-lg">
         <Conversation>
           <ConversationContent>
             {messages.length === 0 ? (
@@ -133,20 +109,27 @@ export default function Home() {
 
               return (
                 <div className={cn('flex items-end gap-2', isAssistant ? '' : 'justify-end')} key={message.id}>
-                  {isLastAssistantMessage ? (
-                    <Persona
-                      className={cn(
-                        'size-10 shrink-0 rounded-full drop-shadow-sm brightness-[0.55] contrast-150 saturate-0 transition-transform duration-300 dark:brightness-125 dark:contrast-110',
-                        assistantPersonaState === 'thinking' ? 'persona-streaming scale-110' : 'scale-100',
-                      )}
-                      state={assistantPersonaState}
-                      variant="command"
-                    />
+                  {isAssistant ? (
+                    isLastAssistantMessage ? (
+                      <Persona
+                        className={cn(
+                          'size-10 shrink-0 rounded-full drop-shadow-sm brightness-[0.55] contrast-150 saturate-0 transition-transform duration-300 dark:brightness-125 dark:contrast-110',
+                          assistantPersonaState === 'thinking' ? 'persona-streaming scale-110' : 'scale-100',
+                        )}
+                        state={assistantPersonaState}
+                        variant="command"
+                      />
+                    ) : (
+                      <div aria-hidden className="size-10 shrink-0" />
+                    )
                   ) : null}
 
                   <Message from={message.role}>
                     <MessageContent
-                      className={cn(isAssistant ? 'rounded-lg border bg-secondary px-4 py-3' : undefined)}
+                      className={cn(
+                        'group-[.is-user]:border group-[.is-user]:border-chat-user-border group-[.is-user]:bg-chat-user group-[.is-user]:text-chat-user-foreground',
+                        'group-[.is-assistant]:border-none group-[.is-assistant]:bg-transparent group-[.is-assistant]:px-0 group-[.is-assistant]:py-0',
+                      )}
                     >
                       {message.parts.map((part, index) => {
                         const key = `${message.id}-${index}`
@@ -165,7 +148,11 @@ export default function Home() {
                           const dynamicToolName = typeof part.toolName === 'string' ? part.toolName : 'dynamic-tool'
 
                           return (
-                            <Tool defaultOpen={isOpenByDefault} key={key}>
+                            <Tool
+                              className="border-chat-tool-border/70 bg-transparent"
+                              defaultOpen={isOpenByDefault}
+                              key={key}
+                            >
                               <ToolHeader state={part.state} toolName={dynamicToolName} type={part.type} />
                               <ToolContent>
                                 <ToolInput input={part.input} />
@@ -176,7 +163,11 @@ export default function Home() {
                         }
 
                         return (
-                          <Tool defaultOpen={isOpenByDefault} key={key}>
+                          <Tool
+                            className="border-chat-tool-border/70 bg-transparent"
+                            defaultOpen={isOpenByDefault}
+                            key={key}
+                          >
                             <ToolHeader state={part.state} type={part.type} />
                             <ToolContent>
                               <ToolInput input={part.input} />
@@ -191,7 +182,6 @@ export default function Home() {
               )
             })}
           </ConversationContent>
-          <ConversationDownload messages={downloadableMessages} />
           <ConversationScrollButton />
         </Conversation>
       </section>

@@ -71,6 +71,9 @@ Rules:
 - Prioritize UX first: clear hierarchy, readable typography, strong contrast, and obvious interaction affordances.
 - Keep flows simple and intuitive on both desktop and mobile.
 - Prefer intentional spacing, color, and motion choices over decorative clutter.
+- In chat UIs, keep assistant text visually light (no filled bubble or heavy border), use a warm semantic token set for user bubbles, and keep tool/result containers on subtle low-contrast borders.
+- Use semantic design tokens for colors, spacing, and typography. Avoid hardcoded values in components.
+- Use Tailwind's `@apply` to create reusable utility classes for common patterns (e.g. chat bubbles, tool containers) to keep JSX clean.
 
 **UI component installation:**
 
