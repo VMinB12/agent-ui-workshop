@@ -1,0 +1,68 @@
+[project]
+name = "agent"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "duckdb>=1.4.4",
+    "fastapi>=0.117.1",
+    "httpx>=0.28.1",
+    "polars>=1.38.1",
+    "pyarrow>=23.0.1",
+    "pydantic-ai-slim[cli,openai]>=1.14.0",
+    "pydantic-settings>=2.13.1",
+    "uvicorn>=0.37.0",
+]
+
+[tool.ruff.format]
+# don't format python in docstrings, pytest-examples takes care of it
+docstring-code-format = false
+quote-style = "single"
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "SIM", # flake8-simplify
+    "RUF", # Ruff-specific rules
+]
+ignore = [
+    "B008", # FastAPI dependency patterns commonly use call defaults
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ty.src]
+include = [
+    "agent",
+]
+
+[tool.ty.environment]
+python-version = "3.12"
+
+[tool.ty.terminal]
+output-format = "concise"
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+pythonpath = [
+    ".",
+]
+
+[dependency-groups]
+dev = [
+    "dirty-equals>=0.11",
+    "inline-snapshot>=0.32.3",
+    "pytest>=8.4.2",
+    "pytest-anyio>=0.0.0",
+    "ruff>=0.15.2",
+    "ty>=0.0.18",
+]
