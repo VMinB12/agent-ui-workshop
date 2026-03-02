@@ -10,14 +10,16 @@ import pydantic_ai
 from pydantic_ai.models.openai import OpenAIResponsesModel, OpenAIResponsesModelSettings
 from pydantic_ai.ui.vercel_ai.response_types import DataChunk
 
-CHINOOK_DB_PATH = Path(__file__).parent.parent / 'data' / 'chinook.db'
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+CHINOOK_DB_PATH = PROJECT_ROOT / 'data' / 'chinook.db'
 
 
 def _connect() -> duckdb.DuckDBPyConnection:
     if not CHINOOK_DB_PATH.exists():
         raise pydantic_ai.ModelRetry(
             f'Chinook database not found at {CHINOOK_DB_PATH}. '
-            'Add a chinook.db file next to sql_agent.py.'
+            'Tell the user to run `npm run download:chinook` from the project root '
+            'to fetch it.'
         )
     return duckdb.connect(str(CHINOOK_DB_PATH))
 
