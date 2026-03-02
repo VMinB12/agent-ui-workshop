@@ -13,6 +13,10 @@ dependencies = [
     "uvicorn>=0.37.0",
 ]
 
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"
+
 [tool.ruff.format]
 # don't format python in docstrings, pytest-examples takes care of it
 docstring-code-format = false
