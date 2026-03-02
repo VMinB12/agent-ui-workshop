@@ -2,7 +2,19 @@
 
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
+import {
+  Conversation,
+  ConversationContent,
+  ConversationDownload,
+  ConversationEmptyState,
+  ConversationScrollButton,
+  type ConversationMessage,
+} from '@/components/ai-elements/conversation'
+import { Message, MessageContent, MessageResponse } from '@/components/ai-elements/message'
 import { Persona, type PersonaState } from '@/components/ai-elements/persona'
+import { Tool, ToolContent, ToolHeader, ToolInput, ToolOutput, type ToolPart } from '@/components/ai-elements/tool'
+import { cn } from '@/lib/utils'
+import { MessageSquareIcon } from 'lucide-react'
 import { nanoid } from 'nanoid'
 import { useQueryState } from 'nuqs'
 import { useEffect, useMemo, useState } from 'react'
@@ -14,9 +26,41 @@ const CHAT_API_BASE = (process.env.NEXT_PUBLIC_CHAT_API_BASE_URL?.trim() || 'htt
 
 const buildChatEndpoint = (conversationId: string): string => `${CHAT_API_BASE}/chat/${conversationId}`
 
-const getMessageText = (parts: Array<{ type: string; text?: string }>): string =>
+const TOOL_STATES: ReadonlySet<ToolPart['state']> = new Set([
+  'approval-requested',
+  'approval-responded',
+  'input-available',
+  'input-streaming',
+  'output-available',
+  'output-denied',
+  'output-error',
+])
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
+
+const isTextPart = (part: unknown): part is { type: 'text'; text: string } =>
+  isRecord(part) && part.type === 'text' && typeof part.text === 'string'
+
+const isToolPart = (part: unknown): part is ToolPart =>
+  isRecord(part) &&
+  typeof part.type === 'string' &&
+  (part.type.startsWith('tool-') || part.type === 'dynamic-tool') &&
+  typeof part.state === 'string' &&
+  TOOL_STATES.has(part.state as ToolPart['state']) &&
+  'input' in part &&
+  'output' in part &&
+  'errorText' in part
+
+const toConversationRole = (role: string): ConversationMessage['role'] => {
+  if (role === 'assistant' || role === 'user' || role === 'system' || role === 'data' || role === 'tool') {
+    return role
+  }
+  return 'assistant'
+}
+
+const getMessageText = (parts: ReadonlyArray<unknown>): string =>
   parts
-    .filter((part) => part.type === 'text' && typeof part.text === 'string')
+    .filter(isTextPart)
     .map((part) => part.text)
     .join('')
 
@@ -41,6 +85,15 @@ export default function Home() {
     transport: new DefaultChatTransport({ api: endpoint }),
   })
 
+  const downloadableMessages = useMemo<ConversationMessage[]>(
+    () =>
+      messages.map((message) => ({
+        content: getMessageText(message.parts),
+        role: toConversationRole(message.role),
+      })),
+    [messages],
+  )
+
   const lastAssistantMessageId = useMemo(() => {
     for (let i = messages.length - 1; i >= 0; i -= 1) {
       if (messages[i].role !== 'user') {
@@ -61,41 +114,90 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="flex-1 space-y-4 overflow-y-auto pb-28">
-        {messages.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Ask a question to start chatting.</p>
-        ) : null}
+      <section className="min-h-0 flex-1 overflow-hidden rounded-lg border bg-card">
+        <Conversation>
+          <ConversationContent>
+            {messages.length === 0 ? (
+              <ConversationEmptyState
+                description="Ask a question to begin chatting with the agent."
+                icon={<MessageSquareIcon className="size-10" />}
+                title="Start a conversation"
+              />
+            ) : null}
 
-        {messages.map((message) => {
-          const text = getMessageText(message.parts)
-          const isAssistant = message.role !== 'user'
-          const isLastAssistantMessage = isAssistant && message.id === lastAssistantMessageId
-          const assistantPersonaState: PersonaState =
-            status === 'streaming' && isLastAssistantMessage ? 'thinking' : 'idle'
+            {messages.map((message) => {
+              const isAssistant = message.role !== 'user'
+              const isLastAssistantMessage = isAssistant && message.id === lastAssistantMessageId
+              const assistantPersonaState: PersonaState =
+                status === 'streaming' && isLastAssistantMessage ? 'thinking' : 'idle'
 
-          return (
-            <div key={message.id} className={`flex items-end gap-2 ${isAssistant ? '' : 'justify-end'}`}>
-              {isLastAssistantMessage ? (
-                <Persona
-                  className={`size-10 shrink-0 rounded-full drop-shadow-sm brightness-[0.55] contrast-150 saturate-0 transition-transform duration-300 dark:brightness-125 dark:contrast-110 ${assistantPersonaState === 'thinking' ? 'persona-streaming scale-110' : 'scale-100'}`}
-                  state={assistantPersonaState}
-                  variant="command"
-                />
-              ) : null}
-              <article
-                className={`max-w-[85%] rounded-lg px-4 py-3 text-sm ${
-                  isAssistant ? 'bg-secondary text-secondary-foreground' : 'bg-primary text-primary-foreground'
-                }`}
-              >
-                {text}
-              </article>
-            </div>
-          )
-        })}
+              return (
+                <div className={cn('flex items-end gap-2', isAssistant ? '' : 'justify-end')} key={message.id}>
+                  {isLastAssistantMessage ? (
+                    <Persona
+                      className={cn(
+                        'size-10 shrink-0 rounded-full drop-shadow-sm brightness-[0.55] contrast-150 saturate-0 transition-transform duration-300 dark:brightness-125 dark:contrast-110',
+                        assistantPersonaState === 'thinking' ? 'persona-streaming scale-110' : 'scale-100',
+                      )}
+                      state={assistantPersonaState}
+                      variant="command"
+                    />
+                  ) : null}
+
+                  <Message from={message.role}>
+                    <MessageContent
+                      className={cn(isAssistant ? 'rounded-lg border bg-secondary px-4 py-3' : undefined)}
+                    >
+                      {message.parts.map((part, index) => {
+                        const key = `${message.id}-${index}`
+
+                        if (isTextPart(part)) {
+                          return <MessageResponse key={key}>{part.text}</MessageResponse>
+                        }
+
+                        if (!isToolPart(part)) {
+                          return null
+                        }
+
+                        const isOpenByDefault = part.state === 'output-available' || part.state === 'output-error'
+
+                        if (part.type === 'dynamic-tool') {
+                          const dynamicToolName = typeof part.toolName === 'string' ? part.toolName : 'dynamic-tool'
+
+                          return (
+                            <Tool defaultOpen={isOpenByDefault} key={key}>
+                              <ToolHeader state={part.state} toolName={dynamicToolName} type={part.type} />
+                              <ToolContent>
+                                <ToolInput input={part.input} />
+                                <ToolOutput errorText={part.errorText} output={part.output} />
+                              </ToolContent>
+                            </Tool>
+                          )
+                        }
+
+                        return (
+                          <Tool defaultOpen={isOpenByDefault} key={key}>
+                            <ToolHeader state={part.state} type={part.type} />
+                            <ToolContent>
+                              <ToolInput input={part.input} />
+                              <ToolOutput errorText={part.errorText} output={part.output} />
+                            </ToolContent>
+                          </Tool>
+                        )
+                      })}
+                    </MessageContent>
+                  </Message>
+                </div>
+              )
+            })}
+          </ConversationContent>
+          <ConversationDownload messages={downloadableMessages} />
+          <ConversationScrollButton />
+        </Conversation>
       </section>
 
       <form
-        className="fixed inset-x-0 bottom-0 border-t bg-background/90 p-4 backdrop-blur"
+        className="mt-4 border-t bg-background/90 pt-4"
         onSubmit={(event) => {
           event.preventDefault()
           const next = input.trim()
@@ -107,12 +209,12 @@ export default function Home() {
           setInput('')
         }}
       >
-        <div className="mx-auto flex w-full max-w-4xl gap-2">
+        <div className="mx-auto flex w-full gap-2">
           <input
             className="h-10 flex-1 rounded-md border bg-background px-3 text-sm"
             disabled={status === 'submitted' || status === 'streaming'}
             onChange={(event) => setInput(event.target.value)}
-            placeholder="Ask about the Chinook database..."
+            placeholder="Ask me anything..."
             value={input}
           />
           <button
