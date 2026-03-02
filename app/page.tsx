@@ -2,7 +2,10 @@
 
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
-import { useId, useMemo, useState } from 'react'
+import { Persona, type PersonaState } from '@/components/ai-elements/persona'
+import { nanoid } from 'nanoid'
+import { useQueryState } from 'nuqs'
+import { useEffect, useMemo, useState } from 'react'
 
 const CHAT_API_BASE_URL = process.env.NEXT_PUBLIC_CHAT_API_BASE_URL
 const CHAT_API_BASE_PATH = process.env.NEXT_PUBLIC_CHAT_API_BASE_PATH ?? '/api/chat'
@@ -38,9 +41,18 @@ const getMessageText = (parts: Array<{ type: string; text?: string }>): string =
 
 export default function Home() {
   const [input, setInput] = useState('')
-  const reactId = useId()
+  const [conversationIdParam, setConversationIdParam] = useQueryState('conversationId')
 
-  const conversationId = useMemo(() => `chat-${reactId.replaceAll(':', '')}`, [reactId])
+  const conversationId = useMemo(() => conversationIdParam ?? `chat-${nanoid(8)}`, [conversationIdParam])
+
+  useEffect(() => {
+    if (!conversationIdParam) {
+      void setConversationIdParam(conversationId, {
+        history: 'replace',
+      })
+    }
+  }, [conversationId, conversationIdParam, setConversationIdParam])
+
   const endpoint = useMemo(() => buildChatEndpoint(conversationId), [conversationId])
 
   const { messages, sendMessage, status, error } = useChat({
@@ -48,13 +60,24 @@ export default function Home() {
     transport: new DefaultChatTransport({ api: endpoint }),
   })
 
+  const lastAssistantMessageId = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i -= 1) {
+      if (messages[i].role !== 'user') {
+        return messages[i].id
+      }
+    }
+    return null
+  }, [messages])
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col p-4 sm:p-8">
       <header className="mb-6 border-b pb-4">
-        <h1 className="text-xl font-semibold">AI Chat</h1>
-        <p className="text-sm text-muted-foreground">
-          Endpoint: <code>{endpoint}</code>
-        </p>
+        <div className="group/title inline-flex flex-col">
+          <h1 className="text-xl font-semibold">AI Chat</h1>
+          <p className="max-h-0 overflow-hidden text-xs text-muted-foreground opacity-0 transition-all duration-200 group-hover/title:mt-1 group-hover/title:max-h-10 group-hover/title:opacity-100">
+            Endpoint: <code>{endpoint}</code>
+          </p>
+        </div>
       </header>
 
       <section className="flex-1 space-y-4 overflow-y-auto pb-28">
@@ -64,17 +87,28 @@ export default function Home() {
 
         {messages.map((message) => {
           const text = getMessageText(message.parts)
+          const isAssistant = message.role !== 'user'
+          const isLastAssistantMessage = isAssistant && message.id === lastAssistantMessageId
+          const assistantPersonaState: PersonaState =
+            status === 'streaming' && isLastAssistantMessage ? 'thinking' : 'idle'
+
           return (
-            <article
-              key={message.id}
-              className={`max-w-[85%] rounded-lg px-4 py-3 text-sm ${
-                message.role === 'user'
-                  ? 'ml-auto bg-primary text-primary-foreground'
-                  : 'bg-secondary text-secondary-foreground'
-              }`}
-            >
-              {text || <span className="opacity-70">(no text content)</span>}
-            </article>
+            <div key={message.id} className={`flex items-end gap-2 ${isAssistant ? '' : 'justify-end'}`}>
+              {isLastAssistantMessage ? (
+                <Persona
+                  className={`size-10 shrink-0 rounded-full drop-shadow-sm brightness-[0.55] contrast-150 saturate-0 transition-transform duration-300 dark:brightness-125 dark:contrast-110 ${assistantPersonaState === 'thinking' ? 'persona-streaming scale-110' : 'scale-100'}`}
+                  state={assistantPersonaState}
+                  variant="command"
+                />
+              ) : null}
+              <article
+                className={`max-w-[85%] rounded-lg px-4 py-3 text-sm ${
+                  isAssistant ? 'bg-secondary text-secondary-foreground' : 'bg-primary text-primary-foreground'
+                }`}
+              >
+                {text}
+              </article>
+            </div>
           )
         })}
       </section>
