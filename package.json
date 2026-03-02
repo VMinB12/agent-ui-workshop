@@ -29,6 +29,7 @@
     "ai": "^6.0.106",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",
+    "concurrently": "^9.2.1",
     "lucide-react": "^0.576.0",
     "motion": "^12.34.4",
     "nanoid": "^5.1.6",
