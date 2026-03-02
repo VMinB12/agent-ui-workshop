@@ -7,31 +7,12 @@ import { nanoid } from 'nanoid'
 import { useQueryState } from 'nuqs'
 import { useEffect, useMemo, useState } from 'react'
 
-const CHAT_API_BASE_URL = process.env.NEXT_PUBLIC_CHAT_API_BASE_URL
-const CHAT_API_BASE_PATH = process.env.NEXT_PUBLIC_CHAT_API_BASE_PATH ?? '/api/chat'
-const CHAT_ROUTE_PATH = process.env.NEXT_PUBLIC_CHAT_ROUTE_PATH ?? '/chat'
+const CHAT_API_BASE = (process.env.NEXT_PUBLIC_CHAT_API_BASE_URL?.trim() || 'http://127.0.0.1:8000/api').replace(
+  /\/$/,
+  '',
+)
 
-const isAbsoluteUrl = (value: string): boolean => /^https?:\/\//.test(value)
-
-const normalizePath = (value: string): string => {
-  if (!value.startsWith('/')) {
-    return `/${value}`
-  }
-  return value
-}
-
-const stripTrailingSlash = (value: string): string => (value.endsWith('/') ? value.slice(0, -1) : value)
-
-const buildChatEndpoint = (conversationId: string): string => {
-  const defaultDevBaseUrl = 'http://127.0.0.1:8000/api/chat'
-  const fallbackBase = process.env.NODE_ENV === 'development' ? defaultDevBaseUrl : CHAT_API_BASE_PATH
-  const configuredBase = CHAT_API_BASE_URL?.trim() || fallbackBase
-  const base = isAbsoluteUrl(configuredBase)
-    ? stripTrailingSlash(configuredBase)
-    : stripTrailingSlash(normalizePath(configuredBase))
-  const route = normalizePath(CHAT_ROUTE_PATH)
-  return `${base}${route}/${conversationId}`
-}
+const buildChatEndpoint = (conversationId: string): string => `${CHAT_API_BASE}/chat/${conversationId}`
 
 const getMessageText = (parts: Array<{ type: string; text?: string }>): string =>
   parts

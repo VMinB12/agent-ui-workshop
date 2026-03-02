@@ -27,5 +27,5 @@ app.include_router(
     create_chat_router(
         agent=agent,
     ),
-    prefix='/api/chat',
+    prefix='/api',
 )
