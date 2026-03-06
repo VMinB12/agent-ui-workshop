@@ -166,23 +166,8 @@
       currentColor 45%,
       color-mix(in oklab, currentColor 82%, black 18%)
     );
-    transform: translate(-50%, -50%) rotate(35deg);
+    transform: translate(-50%, -50%) rotate(var(--persona-angle, 35deg));
     transform-origin: center;
-    transition: transform 240ms ease;
     will-change: transform;
-  }
-
-  .persona-avatar-streaming .persona-avatar__bar {
-    animation: persona-spin 1.45s linear infinite;
-  }
-}
-
-@keyframes persona-spin {
-  from {
-    transform: translate(-50%, -50%) rotate(35deg);
-  }
-
-  to {
-    transform: translate(-50%, -50%) rotate(395deg);
   }
 }
