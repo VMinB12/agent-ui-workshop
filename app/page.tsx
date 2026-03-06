@@ -1,7 +1,14 @@
 'use client'
 
 import { useChat } from '@ai-sdk/react'
-import { DefaultChatTransport } from 'ai'
+import { DefaultChatTransport, type ChatStatus } from 'ai'
+import {
+  Attachment,
+  AttachmentInfo,
+  AttachmentPreview,
+  AttachmentRemove,
+  Attachments,
+} from '@/components/ai-elements/attachments'
 import {
   Conversation,
   ConversationContent,
@@ -10,6 +17,20 @@ import {
 } from '@/components/ai-elements/conversation'
 import { Message, MessageContent, MessageResponse } from '@/components/ai-elements/message'
 import { Persona, type PersonaState } from '@/components/ai-elements/persona'
+import {
+  PromptInput,
+  PromptInputActionAddAttachments,
+  PromptInputActionMenu,
+  PromptInputActionMenuContent,
+  PromptInputActionMenuTrigger,
+  PromptInputBody,
+  PromptInputFooter,
+  PromptInputHeader,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  PromptInputTools,
+  usePromptInputAttachments,
+} from '@/components/ai-elements/prompt-input'
 import { Tool, ToolContent, ToolHeader, ToolInput, ToolOutput, type ToolPart } from '@/components/ai-elements/tool'
 import { cn } from '@/lib/utils'
 import { MessageSquareIcon } from 'lucide-react'
@@ -39,6 +60,13 @@ const isRecord = (value: unknown): value is Record<string, unknown> => typeof va
 const isTextPart = (part: unknown): part is { type: 'text'; text: string } =>
   isRecord(part) && part.type === 'text' && typeof part.text === 'string'
 
+const isFilePart = (part: unknown): part is { type: 'file'; filename?: string; mediaType: string; url: string } =>
+  isRecord(part) &&
+  part.type === 'file' &&
+  typeof part.mediaType === 'string' &&
+  typeof part.url === 'string' &&
+  (typeof part.filename === 'string' || typeof part.filename === 'undefined')
+
 const isToolPart = (part: unknown): part is ToolPart =>
   isRecord(part) &&
   typeof part.type === 'string' &&
@@ -48,6 +76,68 @@ const isToolPart = (part: unknown): part is ToolPart =>
   'input' in part &&
   'output' in part &&
   'errorText' in part
+
+const PromptInputAttachmentsDisplay = () => {
+  const attachments = usePromptInputAttachments()
+
+  if (attachments.files.length === 0) {
+    return null
+  }
+
+  return (
+    <Attachments className="w-full" variant="inline">
+      {attachments.files.map((attachment) => (
+        <Attachment data={attachment} key={attachment.id} onRemove={() => attachments.remove(attachment.id)}>
+          <AttachmentPreview />
+          <AttachmentInfo />
+          <AttachmentRemove />
+        </Attachment>
+      ))}
+    </Attachments>
+  )
+}
+
+const PromptInputSubmitControl = ({
+  disabled,
+  status,
+  onStop,
+}: {
+  disabled: boolean
+  status: ChatStatus
+  onStop: () => void
+}) => {
+  const attachments = usePromptInputAttachments()
+
+  return (
+    <PromptInputSubmit
+      className="chat-send-button"
+      disabled={disabled && attachments.files.length === 0}
+      onStop={onStop}
+      status={status}
+    />
+  )
+}
+
+const MessageFileAttachments = ({
+  files,
+}: {
+  files: Array<{ id: string; type: 'file'; filename?: string; mediaType: string; url: string }>
+}) => {
+  if (files.length === 0) {
+    return null
+  }
+
+  return (
+    <Attachments className="mt-3 w-full" variant="list">
+      {files.map((file) => (
+        <Attachment className="bg-background/55" data={file} key={file.id}>
+          <AttachmentPreview />
+          <AttachmentInfo showMediaType />
+        </Attachment>
+      ))}
+    </Attachments>
+  )
+}
 
 export default function Home() {
   const [input, setInput] = useState('')
@@ -65,10 +155,12 @@ export default function Home() {
 
   const endpoint = useMemo(() => buildChatEndpoint(conversationId), [conversationId])
 
-  const { messages, sendMessage, status, error } = useChat({
+  const { messages, sendMessage, stop, status, error } = useChat({
     id: conversationId,
     transport: new DefaultChatTransport({ api: endpoint }),
   })
+
+  const isGenerating = status === 'submitted' || status === 'streaming'
 
   const lastAssistantMessageId = useMemo(() => {
     for (let i = messages.length - 1; i >= 0; i -= 1) {
@@ -102,6 +194,10 @@ export default function Home() {
             ) : null}
 
             {messages.map((message) => {
+              const fileParts = message.parts
+                .filter(isFilePart)
+                .map((part, index) => ({ ...part, id: `${message.id}-file-${index}` }))
+              const contentParts = message.parts.filter((part) => !isFilePart(part))
               const isAssistant = message.role !== 'user'
               const isLastAssistantMessage = isAssistant && message.id === lastAssistantMessageId
               const assistantPersonaState: PersonaState =
@@ -132,7 +228,7 @@ export default function Home() {
                           : 'chat-user-bubble text-chat-user-foreground',
                       )}
                     >
-                      {message.parts.map((part, index) => {
+                      {contentParts.map((part, index) => {
                         const key = `${message.id}-${index}`
 
                         if (isTextPart(part)) {
@@ -181,6 +277,7 @@ export default function Home() {
                           </Tool>
                         )
                       })}
+                      <MessageFileAttachments files={fileParts} />
                     </MessageContent>
                   </Message>
                 </div>
@@ -191,37 +288,50 @@ export default function Home() {
         </Conversation>
       </section>
 
-      <form
+      <PromptInput
         className="chat-composer"
-        onSubmit={(event) => {
-          event.preventDefault()
-          const next = input.trim()
-          if (!next) {
+        multiple
+        onSubmit={async ({ text, files }) => {
+          const next = text.trim()
+          if (!next && files.length === 0) {
             return
           }
 
-          sendMessage({ text: next })
           setInput('')
+
+          try {
+            await sendMessage({ files, text: next })
+          } catch (submitError) {
+            setInput(text)
+            throw submitError
+          }
         }}
       >
-        <div className="mx-auto flex w-full gap-2">
-          <input
-            className="chat-input"
-            disabled={status === 'submitted' || status === 'streaming'}
+        <PromptInputHeader>
+          <PromptInputAttachmentsDisplay />
+        </PromptInputHeader>
+        <PromptInputBody>
+          <PromptInputTextarea
+            className="min-h-12 text-sm placeholder:text-muted-foreground/80"
+            disabled={isGenerating}
             onChange={(event) => setInput(event.target.value)}
             placeholder="Ask me anything..."
             value={input}
           />
-          <button
-            className="chat-send-button"
-            disabled={!input.trim() || status === 'submitted' || status === 'streaming'}
-            type="submit"
-          >
-            Send
-          </button>
-        </div>
-        {error ? <p className="mx-auto mt-2 w-full max-w-4xl text-sm text-destructive">{error.message}</p> : null}
-      </form>
+        </PromptInputBody>
+        <PromptInputFooter>
+          <PromptInputTools>
+            <PromptInputActionMenu>
+              <PromptInputActionMenuTrigger />
+              <PromptInputActionMenuContent>
+                <PromptInputActionAddAttachments />
+              </PromptInputActionMenuContent>
+            </PromptInputActionMenu>
+          </PromptInputTools>
+          <PromptInputSubmitControl disabled={!isGenerating && !input.trim()} onStop={stop} status={status} />
+        </PromptInputFooter>
+      </PromptInput>
+      {error ? <p className="mx-auto mt-2 w-full max-w-4xl text-sm text-destructive">{error.message}</p> : null}
     </main>
   )
 }
