@@ -105,7 +105,7 @@ export default function Home() {
               const isAssistant = message.role !== 'user'
               const isLastAssistantMessage = isAssistant && message.id === lastAssistantMessageId
               const assistantPersonaState: PersonaState =
-                status === 'streaming' && isLastAssistantMessage ? 'thinking' : 'idle'
+                status === 'streaming' && isLastAssistantMessage ? 'streaming' : 'idle'
 
               return (
                 <div className={cn('flex items-end gap-2', isAssistant ? '' : 'justify-end')} key={message.id}>
@@ -113,14 +113,14 @@ export default function Home() {
                     isLastAssistantMessage ? (
                       <Persona
                         className={cn(
-                          'size-10 shrink-0 rounded-full drop-shadow-sm brightness-[0.55] contrast-150 saturate-0 transition-transform duration-300 dark:brightness-125 dark:contrast-110',
-                          assistantPersonaState === 'thinking' ? 'persona-streaming scale-110' : 'scale-100',
+                          'size-5 shrink-0 brightness-[0.55] contrast-150 saturate-0 transition-transform duration-300 dark:brightness-125 dark:contrast-110',
+                          assistantPersonaState === 'streaming' ? 'scale-110' : 'scale-100',
                         )}
                         state={assistantPersonaState}
                         variant="command"
                       />
                     ) : (
-                      <div aria-hidden className="size-10 shrink-0" />
+                      <div aria-hidden className="size-5 shrink-0" />
                     )
                   ) : null}
 
