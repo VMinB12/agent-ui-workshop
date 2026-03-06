@@ -80,17 +80,17 @@ export default function Home() {
   }, [messages])
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col p-4 sm:p-8">
-      <header className="mb-6 border-b pb-4">
+    <main className="chat-shell mx-auto flex min-h-screen w-full max-w-5xl flex-col p-4 sm:p-8">
+      <header className="chat-header mb-6">
         <div className="group/title inline-flex flex-col">
-          <h1 className="text-xl font-semibold">AI Chat</h1>
-          <p className="max-h-0 overflow-hidden text-xs text-muted-foreground opacity-0 transition-all duration-200 group-hover/title:mt-1 group-hover/title:max-h-10 group-hover/title:opacity-100">
+          <h1 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">AI Chat</h1>
+          <p className="mt-2 max-h-0 overflow-hidden text-xs text-muted-foreground opacity-0 transition-all duration-200 group-hover/title:max-h-10 group-hover/title:opacity-100">
             Endpoint: <code>{endpoint}</code>
           </p>
         </div>
       </header>
 
-      <section className="min-h-0 flex-1 overflow-hidden rounded-lg">
+      <section className="chat-panel min-h-0 flex-1 overflow-hidden rounded-[2rem]">
         <Conversation>
           <ConversationContent>
             {messages.length === 0 ? (
@@ -127,15 +127,20 @@ export default function Home() {
                   <Message from={message.role}>
                     <MessageContent
                       className={cn(
-                        'group-[.is-user]:border group-[.is-user]:border-chat-user-border group-[.is-user]:bg-chat-user group-[.is-user]:text-chat-user-foreground',
-                        'group-[.is-assistant]:border-none group-[.is-assistant]:bg-transparent group-[.is-assistant]:px-0 group-[.is-assistant]:py-0',
+                        isAssistant
+                          ? 'border-none bg-transparent px-0 py-0'
+                          : 'chat-user-bubble text-chat-user-foreground',
                       )}
                     >
                       {message.parts.map((part, index) => {
                         const key = `${message.id}-${index}`
 
                         if (isTextPart(part)) {
-                          return <MessageResponse key={key}>{part.text}</MessageResponse>
+                          return (
+                            <MessageResponse className={cn(isAssistant ? 'chat-assistant-copy' : undefined)} key={key}>
+                              {part.text}
+                            </MessageResponse>
+                          )
                         }
 
                         if (!isToolPart(part)) {
@@ -187,7 +192,7 @@ export default function Home() {
       </section>
 
       <form
-        className="mt-4 border-t bg-background/90 pt-4"
+        className="chat-composer"
         onSubmit={(event) => {
           event.preventDefault()
           const next = input.trim()
@@ -201,14 +206,14 @@ export default function Home() {
       >
         <div className="mx-auto flex w-full gap-2">
           <input
-            className="h-10 flex-1 rounded-md border bg-background px-3 text-sm"
+            className="chat-input"
             disabled={status === 'submitted' || status === 'streaming'}
             onChange={(event) => setInput(event.target.value)}
             placeholder="Ask me anything..."
             value={input}
           />
           <button
-            className="h-10 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground disabled:opacity-50"
+            className="chat-send-button"
             disabled={!input.trim() || status === 'submitted' || status === 'streaming'}
             type="submit"
           >

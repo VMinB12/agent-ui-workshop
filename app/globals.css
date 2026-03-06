@@ -8,7 +8,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-fraunces);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -54,33 +54,33 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
+  --background: oklch(0.985 0.012 92);
+  --foreground: oklch(0.208 0.04 258);
+  --card: oklch(0.99 0.014 95);
   --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
+  --popover: oklch(0.995 0.01 95);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --primary: oklch(0.74 0.14 68);
+  --primary-foreground: oklch(0.29 0.05 50);
+  --secondary: oklch(0.95 0.03 86);
+  --secondary-foreground: oklch(0.27 0.05 48);
+  --muted: oklch(0.961 0.014 89);
+  --muted-foreground: oklch(0.53 0.04 62);
+  --accent: oklch(0.972 0.018 86);
+  --accent-foreground: oklch(0.27 0.05 48);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --border: oklch(0.9 0.02 82);
+  --input: oklch(0.94 0.015 88);
+  --ring: oklch(0.78 0.08 72);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --chat-user: oklch(0.91 0.08 78);
-  --chat-user-foreground: oklch(0.3 0.04 52);
-  --chat-user-border: oklch(0.8 0.09 78);
-  --chat-tool-border: oklch(0.9 0.01 255);
+  --chat-user: oklch(0.88 0.095 72);
+  --chat-user-foreground: oklch(0.33 0.06 46);
+  --chat-user-border: oklch(0.79 0.1 70);
+  --chat-tool-border: oklch(0.89 0.016 82);
   --sidebar: oklch(0.984 0.003 247.858);
   --sidebar-foreground: oklch(0.129 0.042 264.695);
   --sidebar-primary: oklch(0.208 0.042 265.755);
@@ -90,6 +90,10 @@
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
   --persona-bar: oklch(0.18 0.03 262);
+  --chat-surface: oklch(0.988 0.02 92 / 0.9);
+  --chat-surface-strong: oklch(0.978 0.028 88 / 0.97);
+  --chat-shadow: 0 18px 50px -28px oklch(0.66 0.08 70 / 0.35);
+  --chat-shadow-soft: 0 10px 26px -18px oklch(0.62 0.06 72 / 0.28);
 }
 
 .dark {
@@ -129,18 +133,149 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
   --persona-bar: oklch(0.96 0.01 250);
+  --chat-surface: oklch(0.23 0.03 256 / 0.9);
+  --chat-surface-strong: oklch(0.28 0.035 256 / 0.95);
+  --chat-shadow: 0 18px 50px -30px oklch(0.02 0.01 260 / 0.65);
+  --chat-shadow-soft: 0 10px 26px -18px oklch(0.02 0.01 260 / 0.5);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply bg-background;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background:
+      radial-gradient(circle at top left, oklch(0.98 0.05 94 / 0.95), transparent 30%),
+      radial-gradient(circle at top right, oklch(0.94 0.06 78 / 0.52), transparent 28%),
+      linear-gradient(180deg, oklch(0.995 0.008 96), oklch(0.975 0.015 88) 50%, oklch(0.968 0.02 84));
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 32%, white 68%);
+    color: var(--foreground);
   }
 }
 
 @layer components {
+  .chat-shell {
+    @apply relative;
+  }
+
+  .chat-shell::before {
+    content: '';
+    position: absolute;
+    inset: 1.25rem 0 auto;
+    height: 12rem;
+    border-radius: 999px;
+    background: radial-gradient(circle, oklch(0.98 0.05 92 / 0.7), transparent 72%);
+    filter: blur(16px);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .chat-header {
+    @apply border-b px-1 pb-5;
+    border-color: color-mix(in oklab, var(--border) 70%, transparent);
+  }
+
+  .chat-panel {
+    background:
+      linear-gradient(180deg, color-mix(in oklab, white 52%, transparent), transparent 22%),
+      linear-gradient(180deg, var(--chat-surface), var(--chat-surface-strong));
+    box-shadow: var(--chat-shadow);
+    border: 1px solid color-mix(in oklab, var(--border) 78%, white 22%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, white 65%, transparent),
+      var(--chat-shadow);
+    backdrop-filter: blur(16px);
+  }
+
+  .chat-composer {
+    @apply mt-5 rounded-3xl p-3 sm:p-4;
+    background: linear-gradient(
+      180deg,
+      var(--chat-surface-strong),
+      color-mix(in oklab, var(--chat-surface) 82%, white 18%)
+    );
+    border: 1px solid color-mix(in oklab, var(--border) 80%, white 20%);
+    box-shadow: var(--chat-shadow-soft);
+  }
+
+  .chat-input {
+    @apply h-12 flex-1 rounded-2xl border px-4 text-sm transition-colors placeholder:text-muted-foreground/80;
+    background: color-mix(in oklab, white 78%, var(--secondary) 22%);
+    border-color: color-mix(in oklab, var(--border) 74%, white 26%);
+    box-shadow: inset 0 1px 0 color-mix(in oklab, white 82%, transparent);
+  }
+
+  .chat-input:focus-visible {
+    outline: none;
+    border-color: color-mix(in oklab, var(--primary) 44%, white 56%);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary) 16%, transparent);
+  }
+
+  .chat-send-button {
+    @apply h-12 rounded-2xl px-5 text-sm font-medium transition-transform duration-200;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 84%, white 16%), var(--primary));
+    color: var(--primary-foreground);
+    box-shadow: 0 14px 24px -18px color-mix(in oklab, var(--primary) 65%, transparent);
+  }
+
+  .chat-send-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  .chat-send-button:disabled {
+    @apply opacity-50;
+    box-shadow: none;
+  }
+
+  .chat-user-bubble {
+    @apply rounded-[1.6rem] px-4 py-3;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1.2rem;
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--chat-user) 72%, white 28%), var(--chat-user)),
+      radial-gradient(circle at top right, color-mix(in oklab, white 34%, transparent), transparent 48%),
+      linear-gradient(135deg, color-mix(in oklab, white 55%, transparent), transparent 55%);
+    border: 1px solid color-mix(in oklab, var(--chat-user-border) 78%, white 22%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, white 72%, transparent),
+      0 18px 32px -24px color-mix(in oklab, var(--chat-user-border) 55%, transparent);
+  }
+
+  .chat-user-bubble .streamdown {
+    @apply leading-7;
+    font-variation-settings:
+      'SOFT' 60,
+      'WONK' 0;
+  }
+
+  .chat-assistant-copy {
+    @apply leading-7 text-[0.97rem];
+    color: color-mix(in oklab, var(--foreground) 94%, var(--muted-foreground) 6%);
+    font-variation-settings:
+      'SOFT' 35,
+      'WONK' 0;
+  }
+
+  .chat-empty-state {
+    @apply rounded-[2rem] px-8 py-12;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--chat-surface) 85%, white 15%), transparent);
+    border: 1px dashed color-mix(in oklab, var(--border) 72%, white 28%);
+  }
+
+  .chat-scroll-button {
+    background: color-mix(in oklab, var(--chat-surface-strong) 88%, white 12%);
+    border-color: color-mix(in oklab, var(--border) 80%, white 20%);
+    box-shadow: var(--chat-shadow-soft);
+  }
+
   .persona-avatar {
     position: relative;
     display: inline-flex;

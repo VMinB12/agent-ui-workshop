@@ -23,7 +23,7 @@ export const Conversation = ({ className, ...props }: ConversationProps) => (
 export type ConversationContentProps = ComponentProps<typeof StickToBottom.Content>
 
 export const ConversationContent = ({ className, ...props }: ConversationContentProps) => (
-  <StickToBottom.Content className={cn('flex flex-col gap-8 p-4', className)} {...props} />
+  <StickToBottom.Content className={cn('flex flex-col gap-10 p-4 sm:p-6', className)} {...props} />
 )
 
 export type ConversationEmptyStateProps = ComponentProps<'div'> & {
@@ -41,7 +41,10 @@ export const ConversationEmptyState = ({
   ...props
 }: ConversationEmptyStateProps) => (
   <div
-    className={cn('flex size-full flex-col items-center justify-center gap-3 p-8 text-center', className)}
+    className={cn(
+      'chat-empty-state flex size-full flex-col items-center justify-center gap-3 p-8 text-center',
+      className,
+    )}
     {...props}
   >
     {children ?? (
@@ -69,7 +72,7 @@ export const ConversationScrollButton = ({ className, ...props }: ConversationSc
     !isAtBottom && (
       <Button
         className={cn(
-          'absolute bottom-4 left-[50%] translate-x-[-50%] rounded-full dark:bg-background dark:hover:bg-muted',
+          'chat-scroll-button absolute bottom-4 left-[50%] translate-x-[-50%] rounded-full dark:bg-background dark:hover:bg-muted',
           className,
         )}
         onClick={handleScrollToBottom}
