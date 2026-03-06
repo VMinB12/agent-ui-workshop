@@ -24,8 +24,8 @@ const MessageFileAttachments = ({ files }: { files: ReturnType<typeof getMessage
   return (
     <Attachments className="mt-3 w-full" variant="list">
       {files.map((file) => (
-        <Attachment className="bg-background/55" data={file} key={file.id}>
-          <AttachmentPreview />
+        <Attachment className="!rounded-none bg-background/55" data={file} key={file.id}>
+          <AttachmentPreview className="!rounded-none" />
           <AttachmentInfo showMediaType />
         </Attachment>
       ))}

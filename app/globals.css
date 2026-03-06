@@ -8,8 +8,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-fraunces);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-share-tech-mono);
+  --font-mono: var(--font-vt323);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -53,90 +53,123 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.985 0.012 92);
-  --foreground: oklch(0.208 0.04 258);
-  --card: oklch(0.99 0.014 95);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(0.995 0.01 95);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.74 0.14 68);
-  --primary-foreground: oklch(0.29 0.05 50);
-  --secondary: oklch(0.95 0.03 86);
-  --secondary-foreground: oklch(0.27 0.05 48);
-  --muted: oklch(0.961 0.014 89);
-  --muted-foreground: oklch(0.53 0.04 62);
-  --accent: oklch(0.972 0.018 86);
-  --accent-foreground: oklch(0.27 0.05 48);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.02 82);
-  --input: oklch(0.94 0.015 88);
-  --ring: oklch(0.78 0.08 72);
+  --radius: 0.18rem;
+  --background: oklch(0.13 0.03 167);
+  --foreground: oklch(0.88 0.16 152);
+  --card: oklch(0.165 0.025 168);
+  --card-foreground: oklch(0.88 0.16 152);
+  --popover: oklch(0.15 0.026 168);
+  --popover-foreground: oklch(0.88 0.16 152);
+  --primary: oklch(0.84 0.2 151);
+  --primary-foreground: oklch(0.11 0.02 165);
+  --secondary: oklch(0.21 0.03 168);
+  --secondary-foreground: oklch(0.82 0.12 151);
+  --muted: oklch(0.19 0.02 169);
+  --muted-foreground: oklch(0.62 0.08 151);
+  --accent: oklch(0.24 0.035 168);
+  --accent-foreground: oklch(0.87 0.16 152);
+  --destructive: oklch(0.68 0.22 27);
+  --border: oklch(0.33 0.07 155);
+  --input: oklch(0.16 0.022 168);
+  --ring: oklch(0.78 0.18 152);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --chat-user: oklch(0.88 0.095 72);
-  --chat-user-foreground: oklch(0.33 0.06 46);
-  --chat-user-border: oklch(0.79 0.1 70);
-  --chat-tool-border: oklch(0.89 0.016 82);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
-  --persona-bar: oklch(0.18 0.03 262);
-  --chat-surface: oklch(0.988 0.02 92 / 0.9);
-  --chat-surface-strong: oklch(0.978 0.028 88 / 0.97);
-  --chat-shadow: 0 18px 50px -28px oklch(0.66 0.08 70 / 0.35);
-  --chat-shadow-soft: 0 10px 26px -18px oklch(0.62 0.06 72 / 0.28);
+  --chat-user: oklch(0.2 0.055 166);
+  --chat-user-foreground: oklch(0.9 0.16 152);
+  --chat-user-border: oklch(0.5 0.11 153);
+  --chat-tool-border: oklch(0.38 0.07 154);
+  --sidebar: oklch(0.14 0.022 168);
+  --sidebar-foreground: oklch(0.88 0.16 152);
+  --sidebar-primary: oklch(0.84 0.2 151);
+  --sidebar-primary-foreground: oklch(0.11 0.02 165);
+  --sidebar-accent: oklch(0.22 0.03 168);
+  --sidebar-accent-foreground: oklch(0.86 0.15 152);
+  --sidebar-border: oklch(0.3 0.06 154);
+  --sidebar-ring: oklch(0.78 0.18 152);
+  --persona-bar: oklch(0.9 0.18 152);
+  --chat-surface: oklch(0.16 0.022 168 / 0.9);
+  --chat-surface-strong: oklch(0.19 0.03 167 / 0.98);
+  --chat-shadow: 0 0 0 1px oklch(0.42 0.08 153 / 0.5), 0 0 32px oklch(0.58 0.14 152 / 0.18);
+  --chat-shadow-soft: 0 0 0 1px oklch(0.36 0.07 153 / 0.4), 0 0 18px oklch(0.54 0.12 152 / 0.12);
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
+  --background: oklch(0.13 0.03 167);
+  --foreground: oklch(0.88 0.16 152);
+  --card: oklch(0.165 0.025 168);
+  --card-foreground: oklch(0.88 0.16 152);
+  --popover: oklch(0.15 0.026 168);
+  --popover-foreground: oklch(0.88 0.16 152);
+  --primary: oklch(0.84 0.2 151);
+  --primary-foreground: oklch(0.11 0.02 165);
+  --secondary: oklch(0.21 0.03 168);
+  --secondary-foreground: oklch(0.82 0.12 151);
+  --muted: oklch(0.19 0.02 169);
+  --muted-foreground: oklch(0.62 0.08 151);
+  --accent: oklch(0.24 0.035 168);
+  --accent-foreground: oklch(0.87 0.16 152);
+  --destructive: oklch(0.68 0.22 27);
+  --border: oklch(0.33 0.07 155);
+  --input: oklch(0.16 0.022 168);
+  --ring: oklch(0.78 0.18 152);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --chat-user: oklch(0.44 0.08 70);
-  --chat-user-foreground: oklch(0.98 0.01 90);
-  --chat-user-border: oklch(0.56 0.09 72);
-  --chat-tool-border: oklch(0.42 0.02 255);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
-  --persona-bar: oklch(0.96 0.01 250);
-  --chat-surface: oklch(0.23 0.03 256 / 0.9);
-  --chat-surface-strong: oklch(0.28 0.035 256 / 0.95);
-  --chat-shadow: 0 18px 50px -30px oklch(0.02 0.01 260 / 0.65);
-  --chat-shadow-soft: 0 10px 26px -18px oklch(0.02 0.01 260 / 0.5);
+  --chat-user: oklch(0.2 0.055 166);
+  --chat-user-foreground: oklch(0.9 0.16 152);
+  --chat-user-border: oklch(0.5 0.11 153);
+  --chat-tool-border: oklch(0.38 0.07 154);
+  --sidebar: oklch(0.14 0.022 168);
+  --sidebar-foreground: oklch(0.88 0.16 152);
+  --sidebar-primary: oklch(0.84 0.2 151);
+  --sidebar-primary-foreground: oklch(0.11 0.02 165);
+  --sidebar-accent: oklch(0.22 0.03 168);
+  --sidebar-accent-foreground: oklch(0.86 0.15 152);
+  --sidebar-border: oklch(0.3 0.06 154);
+  --sidebar-ring: oklch(0.78 0.18 152);
+  --persona-bar: oklch(0.9 0.18 152);
+  --chat-surface: oklch(0.16 0.022 168 / 0.9);
+  --chat-surface-strong: oklch(0.19 0.03 167 / 0.98);
+  --chat-shadow: 0 0 0 1px oklch(0.42 0.08 153 / 0.5), 0 0 32px oklch(0.58 0.14 152 / 0.18);
+  --chat-shadow-soft: 0 0 0 1px oklch(0.36 0.07 153 / 0.4), 0 0 18px oklch(0.54 0.12 152 / 0.12);
+}
+
+@keyframes terminal-flicker {
+  0%,
+  100% {
+    opacity: 0.96;
+  }
+  7% {
+    opacity: 0.9;
+  }
+  9% {
+    opacity: 0.98;
+  }
+  53% {
+    opacity: 0.93;
+  }
+  55% {
+    opacity: 0.99;
+  }
+}
+
+@keyframes terminal-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px oklch(0.42 0.08 153 / 0.5),
+      0 0 24px oklch(0.58 0.14 152 / 0.16);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px oklch(0.48 0.1 153 / 0.65),
+      0 0 34px oklch(0.64 0.16 152 / 0.24);
+  }
 }
 
 @layer base {
@@ -145,89 +178,132 @@
   }
   html {
     @apply bg-background;
+    color-scheme: dark;
   }
   body {
     @apply text-foreground;
     background:
-      radial-gradient(circle at top left, oklch(0.98 0.05 94 / 0.95), transparent 30%),
-      radial-gradient(circle at top right, oklch(0.94 0.06 78 / 0.52), transparent 28%),
-      linear-gradient(180deg, oklch(0.995 0.008 96), oklch(0.975 0.015 88) 50%, oklch(0.968 0.02 84));
+      linear-gradient(180deg, oklch(0.16 0.04 167 / 0.14), transparent 24%),
+      linear-gradient(90deg, oklch(0.42 0.08 153 / 0.08) 1px, transparent 1px),
+      linear-gradient(180deg, oklch(0.42 0.08 153 / 0.05) 1px, transparent 1px),
+      radial-gradient(circle at top center, oklch(0.4 0.09 152 / 0.18), transparent 36%),
+      linear-gradient(180deg, oklch(0.12 0.025 167), oklch(0.09 0.02 167));
+    background-size:
+      auto,
+      22px 22px,
+      22px 22px,
+      auto,
+      auto;
+    letter-spacing: 0.015em;
     min-height: 100vh;
+    text-shadow: 0 0 10px oklch(0.64 0.14 152 / 0.12);
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.14;
+    background: linear-gradient(180deg, transparent 0%, oklch(0.94 0 0 / 0.16) 50%, transparent 100%);
+    background-size: 100% 4px;
+    mix-blend-mode: screen;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 998;
+    background: radial-gradient(circle at center, transparent 55%, oklch(0.04 0.01 167 / 0.5) 100%);
   }
 
   ::selection {
-    background: color-mix(in oklab, var(--primary) 32%, white 68%);
-    color: var(--foreground);
+    background: color-mix(in oklab, var(--primary) 42%, black 58%);
+    color: var(--primary-foreground);
   }
 }
 
 @layer components {
   .chat-shell {
     @apply relative;
+    animation: terminal-flicker 8s linear infinite;
   }
 
   .chat-shell::before {
     content: '';
     position: absolute;
-    inset: 1.25rem 0 auto;
-    height: 12rem;
-    border-radius: 999px;
-    background: radial-gradient(circle, oklch(0.98 0.05 92 / 0.7), transparent 72%);
-    filter: blur(16px);
+    inset: 0;
+    border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
+    box-shadow: inset 0 0 0 1px oklch(0.88 0.16 152 / 0.04);
     pointer-events: none;
     z-index: -1;
   }
 
   .chat-header {
-    @apply border-b px-1 pb-5;
-    border-color: color-mix(in oklab, var(--border) 70%, transparent);
+    @apply px-1 pb-5;
+    border-bottom: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+    text-transform: uppercase;
   }
 
   .chat-panel {
     background:
-      linear-gradient(180deg, color-mix(in oklab, white 52%, transparent), transparent 22%),
+      linear-gradient(180deg, oklch(0.36 0.08 152 / 0.08), transparent 8%),
       linear-gradient(180deg, var(--chat-surface), var(--chat-surface-strong));
+    border: 1px solid color-mix(in oklab, var(--border) 90%, transparent);
     box-shadow: var(--chat-shadow);
-    border: 1px solid color-mix(in oklab, var(--border) 78%, white 22%);
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 65%, transparent),
-      var(--chat-shadow);
-    backdrop-filter: blur(16px);
+    position: relative;
+  }
+
+  .chat-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent, oklch(0.82 0.17 152 / 0.02));
   }
 
   .chat-composer {
-    @apply mt-5 rounded-3xl p-3 sm:p-4;
+    @apply mt-5 p-3 sm:p-4;
     background: linear-gradient(
       180deg,
       var(--chat-surface-strong),
-      color-mix(in oklab, var(--chat-surface) 82%, white 18%)
+      color-mix(in oklab, var(--chat-surface) 94%, black 6%)
     );
-    border: 1px solid color-mix(in oklab, var(--border) 80%, white 20%);
+    border: 1px solid color-mix(in oklab, var(--border) 90%, transparent);
     box-shadow: var(--chat-shadow-soft);
   }
 
   .chat-input {
-    @apply h-12 flex-1 rounded-2xl border px-4 text-sm transition-colors placeholder:text-muted-foreground/80;
-    background: color-mix(in oklab, white 78%, var(--secondary) 22%);
-    border-color: color-mix(in oklab, var(--border) 74%, white 26%);
-    box-shadow: inset 0 1px 0 color-mix(in oklab, white 82%, transparent);
+    @apply h-12 flex-1 border px-4 text-sm transition-colors placeholder:text-muted-foreground/80;
+    background: color-mix(in oklab, var(--background) 90%, black 10%);
+    border-color: color-mix(in oklab, var(--border) 92%, transparent);
+    box-shadow: inset 0 0 0 1px oklch(0.88 0.16 152 / 0.03);
   }
 
   .chat-input:focus-visible {
     outline: none;
-    border-color: color-mix(in oklab, var(--primary) 44%, white 56%);
-    box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary) 16%, transparent);
+    border-color: color-mix(in oklab, var(--primary) 82%, transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--primary) 55%, transparent),
+      0 0 18px oklch(0.62 0.14 152 / 0.18);
   }
 
   .chat-send-button {
-    @apply h-12 rounded-2xl px-5 text-sm font-medium transition-transform duration-200;
-    background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 84%, white 16%), var(--primary));
+    @apply h-12 px-5 text-sm font-medium transition-transform duration-200;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 78%, white 22%), var(--primary));
     color: var(--primary-foreground);
-    box-shadow: 0 14px 24px -18px color-mix(in oklab, var(--primary) 65%, transparent);
+    border: 1px solid color-mix(in oklab, var(--primary) 84%, black 16%);
+    box-shadow: 0 0 18px color-mix(in oklab, var(--primary) 22%, transparent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
   .chat-send-button:hover:not(:disabled) {
     transform: translateY(-1px);
+    animation: terminal-pulse 1.1s ease-in-out infinite;
   }
 
   .chat-send-button:disabled {
@@ -236,43 +312,36 @@
   }
 
   .chat-user-bubble {
-    @apply rounded-[1.6rem] px-4 py-3;
-    border-top-right-radius: 1rem;
-    border-bottom-right-radius: 1.2rem;
-    background:
-      linear-gradient(180deg, color-mix(in oklab, var(--chat-user) 72%, white 28%), var(--chat-user)),
-      radial-gradient(circle at top right, color-mix(in oklab, white 34%, transparent), transparent 48%),
-      linear-gradient(135deg, color-mix(in oklab, white 55%, transparent), transparent 55%);
-    border: 1px solid color-mix(in oklab, var(--chat-user-border) 78%, white 22%);
+    @apply px-4 py-3;
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--chat-user) 88%, black 12%),
+      color-mix(in oklab, var(--chat-user) 96%, black 4%)
+    );
+    border: 1px solid color-mix(in oklab, var(--chat-user-border) 90%, transparent);
     box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 72%, transparent),
-      0 18px 32px -24px color-mix(in oklab, var(--chat-user-border) 55%, transparent);
+      inset 0 0 0 1px oklch(0.88 0.16 152 / 0.04),
+      0 0 22px oklch(0.54 0.13 152 / 0.12);
   }
 
   .chat-user-bubble .streamdown {
     @apply leading-7;
-    font-variation-settings:
-      'SOFT' 60,
-      'WONK' 0;
   }
 
   .chat-assistant-copy {
     @apply leading-7 text-[0.97rem];
-    color: color-mix(in oklab, var(--foreground) 94%, var(--muted-foreground) 6%);
-    font-variation-settings:
-      'SOFT' 35,
-      'WONK' 0;
+    color: color-mix(in oklab, var(--foreground) 96%, var(--muted-foreground) 4%);
   }
 
   .chat-empty-state {
-    @apply rounded-[2rem] px-8 py-12;
-    background: linear-gradient(180deg, color-mix(in oklab, var(--chat-surface) 85%, white 15%), transparent);
-    border: 1px dashed color-mix(in oklab, var(--border) 72%, white 28%);
+    @apply px-8 py-12;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--chat-surface) 95%, black 5%), transparent);
+    border: 1px dashed color-mix(in oklab, var(--border) 90%, transparent);
   }
 
   .chat-scroll-button {
-    background: color-mix(in oklab, var(--chat-surface-strong) 88%, white 12%);
-    border-color: color-mix(in oklab, var(--border) 80%, white 20%);
+    background: color-mix(in oklab, var(--chat-surface-strong) 96%, black 4%);
+    border-color: color-mix(in oklab, var(--border) 90%, transparent);
     box-shadow: var(--chat-shadow-soft);
   }
 
@@ -286,6 +355,7 @@
     overflow: hidden;
     color: var(--persona-bar);
     isolation: isolate;
+    filter: drop-shadow(0 0 8px oklch(0.7 0.15 152 / 0.35));
   }
 
   .persona-avatar__bar {
@@ -297,7 +367,7 @@
     border-radius: 0;
     background: linear-gradient(
       180deg,
-      color-mix(in oklab, currentColor 78%, white 22%),
+      color-mix(in oklab, currentColor 84%, white 16%),
       currentColor 45%,
       color-mix(in oklab, currentColor 82%, black 18%)
     );

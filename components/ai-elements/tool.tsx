@@ -14,7 +14,7 @@ import { CodeBlock } from './code-block'
 export type ToolProps = ComponentProps<typeof Collapsible>
 
 export const Tool = ({ className, ...props }: ToolProps) => (
-  <Collapsible className={cn('group not-prose mb-4 w-full rounded-md border', className)} {...props} />
+  <Collapsible className={cn('group not-prose mb-4 w-full rounded-none border', className)} {...props} />
 )
 
 export type ToolPart = ToolUIPart | DynamicToolUIPart
@@ -52,7 +52,7 @@ const statusIcons: Record<ToolPart['state'], ReactNode> = {
 }
 
 export const getStatusBadge = (status: ToolPart['state']) => (
-  <Badge className="gap-1.5 rounded-full text-xs" variant="secondary">
+  <Badge className="gap-1.5 rounded-none text-xs" variant="secondary">
     {statusIcons[status]}
     {statusLabels[status]}
   </Badge>
@@ -92,7 +92,7 @@ export type ToolInputProps = ComponentProps<'div'> & {
 export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
   <div className={cn('space-y-2 overflow-hidden', className)} {...props}>
     <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Parameters</h4>
-    <div className="rounded-md bg-muted/50">
+    <div className="rounded-none bg-muted/50">
       <CodeBlock code={JSON.stringify(input, null, 2)} language="json" />
     </div>
   </div>
@@ -123,7 +123,7 @@ export const ToolOutput = ({ className, output, errorText, ...props }: ToolOutpu
       </h4>
       <div
         className={cn(
-          'overflow-x-auto rounded-md text-xs [&_table]:w-full',
+          'overflow-x-auto rounded-none text-xs [&_table]:w-full',
           errorText ? 'bg-destructive/10 text-destructive' : 'bg-muted/50 text-foreground',
         )}
       >

@@ -12,7 +12,7 @@ export default function Home() {
     <main className="chat-shell mx-auto flex min-h-screen w-full max-w-5xl flex-col p-4 sm:p-8">
       <ChatHeader endpoint={endpoint} />
 
-      <section className="chat-panel min-h-0 flex-1 overflow-hidden rounded-[2rem]">
+      <section className="chat-panel min-h-0 flex-1 overflow-hidden">
         <ChatMessageList lastAssistantMessageId={lastAssistantMessageId} messages={messages} status={status} />
       </section>
 

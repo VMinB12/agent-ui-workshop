@@ -42,10 +42,15 @@ const PromptInputAttachmentsDisplay = () => {
   return (
     <Attachments className="w-full" variant="inline">
       {attachments.files.map((attachment) => (
-        <Attachment data={attachment} key={attachment.id} onRemove={() => attachments.remove(attachment.id)}>
-          <AttachmentPreview />
+        <Attachment
+          className="!rounded-none"
+          data={attachment}
+          key={attachment.id}
+          onRemove={() => attachments.remove(attachment.id)}
+        >
+          <AttachmentPreview className="!rounded-none" />
           <AttachmentInfo />
-          <AttachmentRemove />
+          <AttachmentRemove className="!rounded-none" />
         </Attachment>
       ))}
     </Attachments>
@@ -105,15 +110,15 @@ export const ChatPrompt = ({ status, onStop, onSubmit }: ChatPromptProps) => {
           className="min-h-12 text-sm placeholder:text-muted-foreground/80"
           disabled={isGenerating}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask me anything..."
+          placeholder="Enter command or question..."
           value={input}
         />
       </PromptInputBody>
       <PromptInputFooter>
         <PromptInputTools>
           <PromptInputActionMenu>
-            <PromptInputActionMenuTrigger />
-            <PromptInputActionMenuContent>
+            <PromptInputActionMenuTrigger className="!rounded-none" />
+            <PromptInputActionMenuContent className="!rounded-none">
               <PromptInputActionAddAttachments />
             </PromptInputActionMenuContent>
           </PromptInputActionMenu>
