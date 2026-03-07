@@ -82,21 +82,35 @@ const PromptInputSubmitControl = ({
 
 export const ChatPrompt = ({ status, onStop, onSubmit, starterSuggestions }: ChatPromptProps) => {
   const [input, setInput] = useState('')
+  const [hasDismissedSuggestions, setHasDismissedSuggestions] = useState(false)
   const isGenerating = status === 'submitted' || status === 'streaming'
+  const shouldShowSuggestions = starterSuggestions.length > 0 && !hasDismissedSuggestions
+
   const handleSuggestionClick = useCallback(
-    async (suggestion: string) => {
+    (suggestion: string) => {
       if (isGenerating) {
         return
       }
 
-      await onSubmit({ files: [], text: suggestion })
+      setInput(suggestion)
+      setHasDismissedSuggestions(true)
     },
-    [isGenerating, onSubmit],
+    [isGenerating],
   )
+
+  const handleInputChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const nextValue = event.target.value
+
+    if (nextValue.trim() !== '') {
+      setHasDismissedSuggestions(true)
+    }
+
+    setInput(nextValue)
+  }, [])
 
   return (
     <div className="shrink-0">
-      {starterSuggestions.length > 0 ? (
+      {shouldShowSuggestions ? (
         <Suggestions className="mb-3 px-1 pb-1">
           {starterSuggestions.map((suggestion) => (
             <Suggestion
@@ -137,7 +151,7 @@ export const ChatPrompt = ({ status, onStop, onSubmit, starterSuggestions }: Cha
           <PromptInputTextarea
             className="min-h-12 text-sm placeholder:text-muted-foreground/80"
             disabled={isGenerating}
-            onChange={(event) => setInput(event.target.value)}
+            onChange={handleInputChange}
             placeholder="Enter command or question..."
             value={input}
           />

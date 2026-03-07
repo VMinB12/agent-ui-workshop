@@ -28,7 +28,7 @@ export const AgentChatPane = ({
   status,
 }: AgentChatPaneProps) => (
   <div className="flex h-full min-h-0 flex-col gap-4">
-    <section className="chat-panel min-h-0 flex-1 overflow-hidden">
+    <section className="chat-panel flex min-h-0 flex-1 flex-col overflow-hidden">
       <ChatMessageList lastAssistantMessageId={lastAssistantMessageId} messages={messages} status={status} />
     </section>
 
