@@ -1,23 +1,47 @@
 'use client'
 
+import { AgentChatPane } from '@/components/agent/agent-chat-pane'
+import { AgentDataPanel } from '@/components/agent/agent-data-panel'
+import { AgentWorkspace } from '@/components/agent/agent-workspace'
 import { ChatHeader } from '@/components/chat/chat-header'
-import { ChatMessageList } from '@/components/chat/chat-message-list'
-import { ChatPrompt } from '@/components/chat/chat-prompt'
 import { useChatSession } from '@/hooks/use-chat-session'
 
 export default function Home() {
-  const { endpoint, error, lastAssistantMessageId, messages, sendMessage, status, stop } = useChatSession()
+  const {
+    activeAgent,
+    agentId,
+    agents,
+    dataPanel,
+    endpoint,
+    error,
+    lastAssistantMessageId,
+    messages,
+    sendMessage,
+    setAgentId,
+    status,
+    stop,
+  } = useChatSession()
+
+  const chatPane = (
+    <AgentChatPane
+      error={error}
+      lastAssistantMessageId={lastAssistantMessageId}
+      messages={messages}
+      onStop={stop}
+      onSubmit={sendMessage}
+      status={status}
+    />
+  )
 
   return (
-    <main className="chat-shell mx-auto flex min-h-screen w-full max-w-5xl flex-col p-4 sm:p-8">
-      <ChatHeader endpoint={endpoint} />
+    <main className="chat-shell mx-auto flex min-h-screen w-full max-w-7xl flex-col p-4 sm:p-8">
+      <ChatHeader agents={agents} endpoint={endpoint} onAgentSelect={setAgentId} selectedAgentId={agentId} />
 
-      <section className="chat-panel min-h-0 flex-1 overflow-hidden">
-        <ChatMessageList lastAssistantMessageId={lastAssistantMessageId} messages={messages} status={status} />
-      </section>
-
-      <ChatPrompt onStop={stop} onSubmit={sendMessage} status={status} />
-      {error ? <p className="mx-auto mt-2 w-full max-w-4xl text-sm text-destructive">{error.message}</p> : null}
+      <AgentWorkspace
+        chatPane={chatPane}
+        dataPane={dataPanel.kind === 'none' ? null : <AgentDataPanel dataPanel={dataPanel} />}
+        hasDataPanel={activeAgent.panelKind !== 'none'}
+      />
     </main>
   )
 }
