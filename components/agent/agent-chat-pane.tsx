@@ -5,9 +5,11 @@ import type { ChatStatus } from 'ai'
 import type { PromptInputMessage } from '@/components/ai-elements/prompt-input'
 import { ChatMessageList } from '@/components/chat/chat-message-list'
 import { ChatPrompt } from '@/components/chat/chat-prompt'
+import type { AgentDefinition } from '@/lib/agents'
 import type { WorkshopUIMessage } from '@/lib/chat-types'
 
 type AgentChatPaneProps = {
+  activeAgent: AgentDefinition
   error: Error | undefined
   lastAssistantMessageId: string | null
   messages: WorkshopUIMessage[]
@@ -17,6 +19,7 @@ type AgentChatPaneProps = {
 }
 
 export const AgentChatPane = ({
+  activeAgent,
   error,
   lastAssistantMessageId,
   messages,
@@ -29,7 +32,12 @@ export const AgentChatPane = ({
       <ChatMessageList lastAssistantMessageId={lastAssistantMessageId} messages={messages} status={status} />
     </section>
 
-    <ChatPrompt onStop={onStop} onSubmit={onSubmit} status={status} />
+    <ChatPrompt
+      onStop={onStop}
+      onSubmit={onSubmit}
+      starterSuggestions={activeAgent.starterSuggestions}
+      status={status}
+    />
     {error ? <p className="px-1 text-sm text-destructive">{error.message}</p> : null}
   </div>
 )

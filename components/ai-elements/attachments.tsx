@@ -1,6 +1,7 @@
 'use client'
 
 import type { FileUIPart, SourceDocumentUIPart } from 'ai'
+import Image from 'next/image'
 import type { ComponentProps, HTMLAttributes, ReactNode } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -66,9 +67,16 @@ export const getAttachmentLabel = (data: AttachmentData): string => {
 
 const renderAttachmentImage = (url: string, filename: string | undefined, isGrid: boolean) =>
   isGrid ? (
-    <img alt={filename || 'Image'} className="size-full object-cover" height={96} src={url} width={96} />
+    <Image alt={filename || 'Image'} className="size-full object-cover" height={96} src={url} unoptimized width={96} />
   ) : (
-    <img alt={filename || 'Image'} className="size-full rounded object-cover" height={20} src={url} width={20} />
+    <Image
+      alt={filename || 'Image'}
+      className="size-full rounded object-cover"
+      height={20}
+      src={url}
+      unoptimized
+      width={20}
+    />
   )
 
 // ============================================================================

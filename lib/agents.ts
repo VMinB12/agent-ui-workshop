@@ -54,6 +54,7 @@ export interface AgentDefinition {
   id: AgentId
   name: string
   description: string
+  starterSuggestions: string[]
   buildEndpoint: (conversationId: string) => string
   dataPanel?: AgentDataPanelContract
 }
@@ -70,6 +71,10 @@ export const agentDefinitions: Record<AgentId, AgentDefinition> = {
     id: 'sql',
     name: 'SQL Analyst',
     description: 'Query the Chinook sample database and inspect structured results.',
+    starterSuggestions: [
+      'Display the top 5 artists by sales.',
+      'Who is the best rock artist and how many songs do they have?',
+    ],
     buildEndpoint: (conversationId) => `${CHAT_API_BASE}/chat/${conversationId}`,
     dataPanel: defineAgentDataPanel<SqlResultData | null>({
       title: 'Query Result',
@@ -82,6 +87,10 @@ export const agentDefinitions: Record<AgentId, AgentDefinition> = {
     id: 'arxiv',
     name: 'arXiv Researcher',
     description: 'Search papers, fetch PDFs, and keep a browsable paper shelf.',
+    starterSuggestions: [
+      'Find me an interesting paper on the attention mechanism',
+      'What is the latest development on RAG systems?',
+    ],
     buildEndpoint: (conversationId) => `/api/agents/arxiv/${conversationId}`,
     dataPanel: defineAgentDataPanel<ArxivPanelState>({
       title: 'Paper Browser',

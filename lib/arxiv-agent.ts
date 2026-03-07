@@ -9,7 +9,6 @@ type FetchedArxivPaper = Awaited<ReturnType<typeof fetchArxivPaper>>
 
 type ArxivFetchResult = {
   paper: FetchedArxivPaper
-  pdfDataUrl: string | null
 }
 
 const instructions = `You are an arXiv research assistant.
@@ -23,24 +22,6 @@ Rules:
 - Do not claim to have read a PDF unless you actually fetched it in the current turn.
 - Keep answers concise but useful.
 - Make no more than 3 searches in parallel and no more than 2 fetches in parallel.`
-
-const createPdfDataUrl = async (paper: FetchedArxivPaper) => {
-  const pdfUrl = paper.pdfUrl ?? `https://arxiv.org/pdf/${paper.id}.pdf`
-
-  try {
-    const response = await fetch(pdfUrl)
-
-    if (!response.ok) {
-      return null
-    }
-
-    const bytes = await response.arrayBuffer()
-    const base64 = Buffer.from(bytes).toString('base64')
-    return `data:application/pdf;base64,${base64}`
-  } catch {
-    return null
-  }
-}
 
 export const createArxivAgent = (writer: UIMessageStreamWriter<WorkshopUIMessage>) =>
   new ToolLoopAgent({
@@ -81,7 +62,6 @@ export const createArxivAgent = (writer: UIMessageStreamWriter<WorkshopUIMessage
         }),
         execute: async ({ arxiv_id }) => {
           const paper = await fetchArxivPaper(arxiv_id)
-          const pdfDataUrl = await createPdfDataUrl(paper)
 
           writer.write({
             type: 'data-arxiv-paper',
@@ -89,30 +69,32 @@ export const createArxivAgent = (writer: UIMessageStreamWriter<WorkshopUIMessage
             transient: true,
           })
 
-          return { paper, pdfDataUrl }
+          return { paper }
         },
-        toModelOutput: ({ output }) => ({
-          type: 'content',
-          value: output.pdfDataUrl
-            ? [
-                {
-                  type: 'text',
-                  text: `Fetched arXiv paper ${output.paper.id}: ${output.paper.title}. Authors: ${output.paper.authors.join(', ')}. Abstract: ${output.paper.abstract}`,
-                },
-                {
-                  type: 'file-data',
-                  data: output.pdfDataUrl,
-                  mediaType: 'application/pdf',
-                  filename: `${output.paper.id}.pdf`,
-                },
-              ]
-            : [
-                {
-                  type: 'text',
-                  text: `Fetched arXiv paper ${output.paper.id}: ${output.paper.title}. Authors: ${output.paper.authors.join(', ')}. Abstract: ${output.paper.abstract}. The PDF could not be attached to this step, so answer from the metadata only.`,
-                },
-              ],
-        }),
+        toModelOutput: ({ output }) => {
+          const pdfUrl = output.paper.pdfUrl ?? `https://arxiv.org/pdf/${output.paper.id}.pdf`
+
+          return {
+            type: 'content',
+            value: [
+              {
+                type: 'text',
+                text: `Fetched arXiv paper ${output.paper.id}: ${output.paper.title}. Authors: ${output.paper.authors.join(', ')}. Abstract: ${output.paper.abstract}`,
+              },
+              {
+                data: pdfUrl,
+                filename: `${output.paper.id}.pdf`,
+                mediaType: 'application/pdf',
+                type: 'file',
+              } as unknown as {
+                type: 'file-data'
+                data: string
+                mediaType: string
+                filename?: string
+              },
+            ],
+          }
+        },
       }),
     },
   })

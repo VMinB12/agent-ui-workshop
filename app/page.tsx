@@ -25,6 +25,7 @@ export default function Home() {
 
   const chatPane = (
     <AgentChatPane
+      activeAgent={activeAgent}
       error={error}
       lastAssistantMessageId={lastAssistantMessageId}
       messages={messages}
@@ -35,7 +36,7 @@ export default function Home() {
   )
 
   return (
-    <main className="chat-shell mx-auto flex min-h-screen w-full max-w-7xl flex-col p-4 sm:p-8">
+    <main className="chat-shell mx-auto flex h-[100dvh] w-full max-w-7xl flex-col overflow-hidden p-4 sm:p-8">
       <ChatHeader agents={agents} endpoint={endpoint} onAgentSelect={setAgentId} selectedAgentId={agentId} />
 
       <AgentWorkspace
