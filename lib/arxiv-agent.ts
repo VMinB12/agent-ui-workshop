@@ -5,6 +5,13 @@ import { z } from 'zod'
 import { fetchArxivPaper, searchArxivPapers } from '@/lib/arxiv-api'
 import type { WorkshopUIMessage } from '@/lib/chat-types'
 
+type FetchedArxivPaper = Awaited<ReturnType<typeof fetchArxivPaper>>
+
+type ArxivFetchResult = {
+  paper: FetchedArxivPaper
+  pdfDataUrl: string | null
+}
+
 const instructions = `You are an arXiv research assistant.
 
 Help the user find relevant papers, summarize them faithfully, and fetch PDFs when deeper inspection is needed.
@@ -16,6 +23,24 @@ Rules:
 - Do not claim to have read a PDF unless you actually fetched it in the current turn.
 - Keep answers concise but useful.
 - Make no more than 3 searches in parallel and no more than 2 fetches in parallel.`
+
+const createPdfDataUrl = async (paper: FetchedArxivPaper) => {
+  const pdfUrl = paper.pdfUrl ?? `https://arxiv.org/pdf/${paper.id}.pdf`
+
+  try {
+    const response = await fetch(pdfUrl)
+
+    if (!response.ok) {
+      return null
+    }
+
+    const bytes = await response.arrayBuffer()
+    const base64 = Buffer.from(bytes).toString('base64')
+    return `data:application/pdf;base64,${base64}`
+  } catch {
+    return null
+  }
+}
 
 export const createArxivAgent = (writer: UIMessageStreamWriter<WorkshopUIMessage>) =>
   new ToolLoopAgent({
@@ -49,13 +74,14 @@ export const createArxivAgent = (writer: UIMessageStreamWriter<WorkshopUIMessage
           }
         },
       }),
-      fetch: tool<{ arxiv_id: string }, Awaited<ReturnType<typeof fetchArxivPaper>>>({
+      fetch: tool<{ arxiv_id: string }, ArxivFetchResult>({
         description: 'Fetch a specific arXiv paper PDF and make it available for detailed question answering.',
         inputSchema: z.object({
           arxiv_id: z.string().min(3).describe('The arXiv identifier, for example 1706.03762 or 1706.03762v7'),
         }),
         execute: async ({ arxiv_id }) => {
           const paper = await fetchArxivPaper(arxiv_id)
+          const pdfDataUrl = await createPdfDataUrl(paper)
 
           writer.write({
             type: 'data-arxiv-paper',
@@ -63,22 +89,29 @@ export const createArxivAgent = (writer: UIMessageStreamWriter<WorkshopUIMessage
             transient: true,
           })
 
-          return paper
+          return { paper, pdfDataUrl }
         },
         toModelOutput: ({ output }) => ({
           type: 'content',
-          value: [
-            {
-              type: 'text',
-              text: `Fetched arXiv paper ${output.id}: ${output.title}. Authors: ${output.authors.join(', ')}. Abstract: ${output.abstract}`,
-            },
-            {
-              type: 'file-data',
-              data: output.pdfUrl ?? `https://arxiv.org/pdf/${output.id}.pdf`,
-              mediaType: 'application/pdf',
-              filename: `${output.id}.pdf`,
-            },
-          ],
+          value: output.pdfDataUrl
+            ? [
+                {
+                  type: 'text',
+                  text: `Fetched arXiv paper ${output.paper.id}: ${output.paper.title}. Authors: ${output.paper.authors.join(', ')}. Abstract: ${output.paper.abstract}`,
+                },
+                {
+                  type: 'file-data',
+                  data: output.pdfDataUrl,
+                  mediaType: 'application/pdf',
+                  filename: `${output.paper.id}.pdf`,
+                },
+              ]
+            : [
+                {
+                  type: 'text',
+                  text: `Fetched arXiv paper ${output.paper.id}: ${output.paper.title}. Authors: ${output.paper.authors.join(', ')}. Abstract: ${output.paper.abstract}. The PDF could not be attached to this step, so answer from the metadata only.`,
+                },
+              ],
         }),
       }),
     },

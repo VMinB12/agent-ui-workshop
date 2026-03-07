@@ -14,73 +14,13 @@ import {
   isAgentId,
   type AgentId,
 } from '@/lib/agents'
-import {
-  EMPTY_ARXIV_PANEL_STATE,
-  isArxivPaperDataPart,
-  isArxivSearchResultsDataPart,
-  isSqlResultDataPart,
-  mergeArxivPapers,
-  type ArxivPanelState,
-  type SqlResultData,
-  type WorkshopDataPart,
-  type WorkshopUIMessage,
-} from '@/lib/chat-types'
-
-type ConversationPanelState = {
-  arxiv: ArxivPanelState
-  sqlResult: SqlResultData | null
-}
-
-const createEmptyConversationPanelState = (): ConversationPanelState => ({
-  arxiv: EMPTY_ARXIV_PANEL_STATE,
-  sqlResult: null,
-})
-
-const applyDataPartToState = (state: ConversationPanelState, dataPart: WorkshopDataPart): ConversationPanelState => {
-  if (isSqlResultDataPart(dataPart)) {
-    return {
-      ...state,
-      sqlResult: dataPart.data,
-    }
-  }
-
-  if (isArxivSearchResultsDataPart(dataPart)) {
-    const papers = mergeArxivPapers(state.arxiv.papers, dataPart.data.papers)
-
-    return {
-      ...state,
-      arxiv: {
-        papers,
-        selectedPaperId: state.arxiv.selectedPaperId ?? papers[0]?.id ?? null,
-      },
-    }
-  }
-
-  if (isArxivPaperDataPart(dataPart)) {
-    const papers = mergeArxivPapers(state.arxiv.papers, [dataPart.data.paper])
-
-    return {
-      ...state,
-      arxiv: {
-        papers,
-        selectedPaperId: dataPart.data.paper.id,
-      },
-    }
-  }
-
-  return state
-}
-
-export type ActiveDataPanelState =
-  | { kind: 'none' }
-  | { kind: 'sql'; title: string; result: SqlResultData | null }
-  | { kind: 'arxiv'; title: string; onSelectPaper: (paperId: string) => void; state: ArxivPanelState }
+import type { WorkshopDataPart, WorkshopUIMessage } from '@/lib/chat-types'
 
 export const useChatSession = () => {
   const [agentIdParam, setAgentIdParam] = useQueryState('agent')
   const [sqlConversationIdParam, setSqlConversationIdParam] = useQueryState(AGENT_CONVERSATION_QUERY_PARAMS.sql)
   const [arxivConversationIdParam, setArxivConversationIdParam] = useQueryState(AGENT_CONVERSATION_QUERY_PARAMS.arxiv)
-  const [panelStateByConversation, setPanelStateByConversation] = useState<Record<string, ConversationPanelState>>({})
+  const [panelStateByConversation, setPanelStateByConversation] = useState<Record<string, unknown>>({})
 
   const agentId = isAgentId(agentIdParam) ? agentIdParam : DEFAULT_AGENT_ID
   const sqlConversationId = useMemo(() => sqlConversationIdParam ?? `sql-${nanoid(8)}`, [sqlConversationIdParam])
@@ -120,15 +60,21 @@ export const useChatSession = () => {
 
   const updatePanelState = useCallback(
     (dataPart: WorkshopDataPart) => {
+      const dataPanel = activeAgent.dataPanel
+
+      if (!dataPanel) {
+        return
+      }
+
       setPanelStateByConversation((currentPanelState) => ({
         ...currentPanelState,
-        [conversationKey]: applyDataPartToState(
-          currentPanelState[conversationKey] ?? createEmptyConversationPanelState(),
+        [conversationKey]: dataPanel.applyDataPart(
+          currentPanelState[conversationKey] ?? dataPanel.createState(),
           dataPart,
         ),
       }))
     },
-    [conversationKey],
+    [activeAgent, conversationKey],
   )
 
   const { messages, sendMessage, stop, status, error } = useChat<WorkshopUIMessage>({
@@ -147,48 +93,29 @@ export const useChatSession = () => {
     return null
   }, [messages])
 
-  const selectArxivPaper = useCallback(
-    (paperId: string) => {
-      setPanelStateByConversation((currentPanelState) => {
-        const conversationPanelState = currentPanelState[conversationKey] ?? createEmptyConversationPanelState()
-
-        return {
-          ...currentPanelState,
-          [conversationKey]: {
-            ...conversationPanelState,
-            arxiv: {
-              ...conversationPanelState.arxiv,
-              selectedPaperId: paperId,
-            },
-          },
-        }
-      })
-    },
-    [conversationKey],
+  const activePanelState = useMemo(
+    () =>
+      activeAgent.dataPanel
+        ? (panelStateByConversation[conversationKey] ?? activeAgent.dataPanel.createState())
+        : null,
+    [activeAgent, conversationKey, panelStateByConversation],
   )
 
-  const currentPanelState = panelStateByConversation[conversationKey] ?? createEmptyConversationPanelState()
+  const setActivePanelState = useCallback(
+    (updater: (state: unknown) => unknown) => {
+      const dataPanel = activeAgent.dataPanel
 
-  const dataPanel: ActiveDataPanelState = useMemo(() => {
-    if (activeAgent.panelKind === 'sql') {
-      return {
-        kind: 'sql',
-        title: 'Query Result',
-        result: currentPanelState.sqlResult,
+      if (!dataPanel) {
+        return
       }
-    }
 
-    if (activeAgent.panelKind === 'arxiv') {
-      return {
-        kind: 'arxiv',
-        title: 'Paper Browser',
-        onSelectPaper: selectArxivPaper,
-        state: currentPanelState.arxiv,
-      }
-    }
-
-    return { kind: 'none' }
-  }, [activeAgent.panelKind, currentPanelState.arxiv, currentPanelState.sqlResult, selectArxivPaper])
+      setPanelStateByConversation((currentPanelState) => ({
+        ...currentPanelState,
+        [conversationKey]: updater(currentPanelState[conversationKey] ?? dataPanel.createState()),
+      }))
+    },
+    [activeAgent, conversationKey],
+  )
 
   const setAgentId = useCallback(
     (nextAgentId: AgentId) => {
@@ -201,12 +128,13 @@ export const useChatSession = () => {
     activeAgent,
     agentId,
     agents: agentList,
-    dataPanel,
+    activePanelState,
     endpoint,
     error,
     lastAssistantMessageId,
     messages,
     sendMessage,
+    setActivePanelState,
     setAgentId,
     status,
     stop,

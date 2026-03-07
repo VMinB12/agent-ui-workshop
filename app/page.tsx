@@ -9,14 +9,15 @@ import { useChatSession } from '@/hooks/use-chat-session'
 export default function Home() {
   const {
     activeAgent,
+    activePanelState,
     agentId,
     agents,
-    dataPanel,
     endpoint,
     error,
     lastAssistantMessageId,
     messages,
     sendMessage,
+    setActivePanelState,
     setAgentId,
     status,
     stop,
@@ -39,8 +40,16 @@ export default function Home() {
 
       <AgentWorkspace
         chatPane={chatPane}
-        dataPane={dataPanel.kind === 'none' ? null : <AgentDataPanel dataPanel={dataPanel} />}
-        hasDataPanel={activeAgent.panelKind !== 'none'}
+        dataPane={
+          activeAgent.dataPanel ? (
+            <AgentDataPanel
+              activeAgent={activeAgent}
+              panelState={activePanelState}
+              setPanelState={setActivePanelState}
+            />
+          ) : null
+        }
+        hasDataPanel={activeAgent.dataPanel != null}
       />
     </main>
   )

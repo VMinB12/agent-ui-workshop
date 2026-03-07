@@ -1,12 +1,17 @@
 'use client'
 
-import type { ActiveDataPanelState } from '@/hooks/use-chat-session'
+import type { AgentDefinition } from '@/lib/agents'
 
-import { ArxivPaperPanel } from './arxiv-paper-panel'
-import { SqlResultPanel } from './sql-result-panel'
-
-export const AgentDataPanel = ({ dataPanel }: { dataPanel: ActiveDataPanelState }) => {
-  if (dataPanel.kind === 'none') {
+export const AgentDataPanel = ({
+  activeAgent,
+  panelState,
+  setPanelState,
+}: {
+  activeAgent: AgentDefinition
+  panelState: unknown
+  setPanelState: (updater: (state: unknown) => unknown) => void
+}) => {
+  if (!activeAgent.dataPanel) {
     return null
   }
 
@@ -14,14 +19,13 @@ export const AgentDataPanel = ({ dataPanel }: { dataPanel: ActiveDataPanelState 
     <div className="flex h-full min-h-0 flex-col">
       <div className="mb-3 px-1">
         <p className="font-mono text-[0.72rem] uppercase tracking-[0.22em] text-primary/80">Data Panel</p>
-        <h2 className="mt-1 font-mono text-2xl uppercase tracking-[0.12em] text-primary">{dataPanel.title}</h2>
+        <h2 className="mt-1 font-mono text-2xl uppercase tracking-[0.12em] text-primary">
+          {activeAgent.dataPanel.title}
+        </h2>
       </div>
 
       <div className="min-h-0 flex-1">
-        {dataPanel.kind === 'sql' ? <SqlResultPanel result={dataPanel.result} /> : null}
-        {dataPanel.kind === 'arxiv' ? (
-          <ArxivPaperPanel onSelectPaper={dataPanel.onSelectPaper} state={dataPanel.state} />
-        ) : null}
+        {activeAgent.dataPanel.render({ state: panelState, updateState: setPanelState })}
       </div>
     </div>
   )
