@@ -133,10 +133,7 @@ Rules:
 
 We keep several documentation files for the main libraries we use:
 
-- Vercel AI SDK: docs/ai-sdk.md
-- Vercel AI Elements: docs/ai-elements.md
 - Pydantic AI: docs/pydantic-ai.md
-- Shadcn/ui: docs/shadcn.md
 
 Consider reading these to get a better understanding of the libraries we use. These files can be large, so you may want to grep to find relevant sections.
-Prefer the MCP tool for these libraries if it is available.
+Prefer the skill or MCP tool for these libraries if it is available.
