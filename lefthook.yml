@@ -3,27 +3,43 @@ pre-commit:
   commands:
     lint:
       glob: "*.{ts,tsx,js,jsx}"
+      exclude:
+        - ".agents/**"
       run: npm run lint --no-warn-ignored {staged_files}
     format:
       glob: "*.{ts,tsx,js,jsx,json,md,css}"
+      exclude:
+        - ".agents/**"
       run: npm run format {staged_files}
       stage_fixed: true
     typecheck:
       glob: "*.{ts,tsx}"
+      exclude:
+        - ".agents/**"
       run: npm run typecheck
     ruff-check:
       glob: "*.{py,pyi}"
+      exclude:
+        - ".agents/**"
       run: uv run --project=agent ruff check --fix {staged_files}
     ruff-format:
       glob: "*.{py,pyi}"
+      exclude:
+        - ".agents/**"
       run: uv run --project=agent ruff format {staged_files}
       stage_fixed: true
     ty-check:
       glob: "*.{py,pyi}"
+      exclude:
+        - ".agents/**"
       run: uv run --project=agent ty check {staged_files}
     check-yaml:
       glob: "*.{yaml,yml}"
+      exclude:
+        - ".agents/**"
       run: npx yamllint {staged_files}
     check-toml:
       glob: "*.toml"
+      exclude:
+        - ".agents/**"
       run: npx taplo check {staged_files}
