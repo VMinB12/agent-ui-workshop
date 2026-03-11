@@ -75,7 +75,7 @@ export const agentDefinitions: Record<AgentId, AgentDefinition> = {
       'Display the top 5 artists by sales.',
       'Who is the best rock artist and how many songs do they have?',
     ],
-    buildEndpoint: (conversationId) => `${CHAT_API_BASE}/chat/${conversationId}`,
+    buildEndpoint: (conversationId) => `${CHAT_API_BASE}/sql/chat/${conversationId}`,
     dataPanel: defineAgentDataPanel<SqlResultData | null>({
       title: 'Query Result',
       createState: () => null,

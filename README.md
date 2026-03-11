@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agent UI Workshop
+
+Build and extend AI chat agents with a shared UI. This workshop includes:
+
+- a Next.js frontend with Vercel AI SDK streaming
+- a TypeScript agent example built with AI SDK
+- a Python agent example built with Pydantic AI
 
 ## Getting Started
 
-First, run the development server:
+This repo works on macOS, Linux, and Windows.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Install these first:
+
+- Node.js 20+ (includes `npm`)
+- Python 3.12+
+- `uv` for the Python environment
+- an OpenAI API key
+- `curl` available on your `PATH` for the preparation script
+
+Create a `.env.local` file in the project root:
+
+```env
+OPENAI_API_KEY=your_key_here
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then run:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run prepare
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`npm run prepare` installs the git hooks and downloads the workshop data/docs.
+`npm run dev` starts the Next.js app on `http://localhost:3000` and the Python API on `http://127.0.0.1:8000`.
 
-## Learn More
+## Build Your Own Agent
 
-To learn more about Next.js, take a look at the following resources:
+### TypeScript / AI SDK
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Use the arXiv agent as the reference implementation.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Create a route in `app/api/agents/<your-agent>/[conversationId]/route.ts`.
+2. In that route, convert incoming UI messages, create your agent, and return a streamed UI response.
+3. Implement the agent itself in `lib/<your-agent>.ts` with its model, instructions, and tools.
+4. Register the new agent in `lib/agents.ts` so it appears in the UI.
+5. If your tools send structured data to the frontend, add the data part types and panel UI alongside the existing agent components.
 
-## Deploy on Vercel
+Good starting points:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `app/api/agents/arxiv/[conversationId]/route.ts`
+- `lib/arxiv-agent.ts`
+- `lib/agents.ts`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Python / Pydantic AI
+
+Use the SQL analyst as the reference implementation.
+
+1. Define or update your Pydantic AI agent in `agent/src/agent/agent.py`.
+2. Add tools there for the work your agent needs to do.
+3. Reuse the FastAPI chat wiring in `agent/src/agent/chat_router.py` and `agent/src/agent/server.py`.
+4. Point the frontend at your Python endpoint from `lib/agents.ts`.
+5. If your tools need to update the UI with structured results, return `ToolReturn` metadata and render it in a frontend panel.
+
+Good starting points:
+
+- `agent/src/agent/agent.py`
+- `agent/src/agent/chat_router.py`
+- `agent/src/agent/server.py`
+- `lib/agents.ts`
+
+## What To Change During The Workshop
+
+- Change the agent instructions.
+- Add or remove tools.
+- Swap the model.
+- Add a new data panel for agent-specific output.
+
+The quickest path is to copy one of the two existing agents, rename it, and then narrow it to your use case.
