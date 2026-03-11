@@ -27,10 +27,12 @@ OPENAI_API_KEY=your_key_here
 Then run:
 
 ```bash
+npm run install
 npm run prepare
 npm run dev
 ```
 
+`npm run install` installs the frontend, shared JavaScript dependencies, and sets up the Python environment.
 `npm run prepare` installs the git hooks and downloads the workshop data/docs.
 `npm run dev` starts the Next.js app on `http://localhost:3000` and the Python API on `http://127.0.0.1:8000`.
 
@@ -77,3 +79,5 @@ Good starting points:
 - Add a new data panel for agent-specific output.
 
 The quickest path is to copy one of the two existing agents, rename it, and then narrow it to your use case.
+
+If you want extension ideas, see `INSPIRATION.md`.
