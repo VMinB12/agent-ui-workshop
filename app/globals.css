@@ -259,6 +259,39 @@
     @apply leading-7;
   }
 
+  .chat-tool-card {
+    @apply mb-4 w-full overflow-hidden rounded-2xl border;
+    background: linear-gradient(
+      180deg,
+      var(--chat-surface-strong),
+      color-mix(in oklab, var(--chat-surface) 92%, white 8%)
+    );
+    border-color: color-mix(in oklab, var(--chat-tool-border) 88%, transparent);
+    box-shadow: var(--chat-shadow-soft);
+  }
+
+  .chat-tool-header {
+    @apply w-full items-center justify-between gap-4 px-4 py-3 text-left;
+    background: linear-gradient(180deg, oklch(1 0 0 / 0.42), transparent);
+  }
+
+  .chat-tool-content {
+    @apply space-y-4 p-4;
+    border-top: 1px solid color-mix(in oklab, var(--border) 76%, transparent);
+  }
+
+  .chat-tool-section {
+    @apply overflow-hidden rounded-xl border;
+    background: color-mix(in oklab, var(--muted) 58%, white 42%);
+    border-color: color-mix(in oklab, var(--border) 82%, transparent);
+  }
+
+  .chat-tool-badge {
+    @apply rounded-full border px-2.5 py-1 text-[11px] font-medium;
+    background: color-mix(in oklab, var(--background) 88%, white 12%);
+    border-color: color-mix(in oklab, var(--border) 82%, transparent);
+  }
+
   .chat-assistant-copy {
     @apply leading-7 text-[0.98rem];
     color: color-mix(in oklab, var(--foreground) 94%, var(--muted-foreground) 6%);

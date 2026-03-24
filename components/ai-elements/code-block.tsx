@@ -43,7 +43,7 @@ const addKeysToTokens = (lines: ThemedToken[][]): KeyedLine[] =>
 // Token rendering component
 const TokenSpan = ({ token }: { token: ThemedToken }) => (
   <span
-    className="dark:!bg-[var(--shiki-dark-bg)] dark:!text-[var(--shiki-dark)]"
+    className="dark:bg-(--shiki-dark-bg)! dark:text-(--shiki-dark)!"
     style={
       {
         backgroundColor: token.bgColor,
@@ -237,7 +237,10 @@ const CodeBlockBody = memo(
 
     return (
       <pre
-        className={cn('dark:!bg-[var(--shiki-dark-bg)] dark:!text-[var(--shiki-dark)] m-0 p-4 text-sm', className)}
+        className={cn(
+          'dark:bg-(--shiki-dark-bg)! dark:text-(--shiki-dark)! m-0 rounded-[inherit] p-4 text-sm',
+          className,
+        )}
         style={preStyle}
       >
         <code
@@ -265,10 +268,7 @@ export const CodeBlockContainer = ({
   ...props
 }: HTMLAttributes<HTMLDivElement> & { language: string }) => (
   <div
-    className={cn(
-      'group relative w-full overflow-hidden rounded-none border bg-background text-foreground',
-      className,
-    )}
+    className={cn('group relative w-full overflow-hidden rounded-xl border bg-background text-foreground', className)}
     data-language={language}
     style={{
       containIntrinsicSize: 'auto 200px',
@@ -363,7 +363,7 @@ const CodeBlockContentInner = ({
   }, [code, language])
 
   return (
-    <div className="relative overflow-auto">
+    <div className="relative overflow-auto rounded-[inherit]">
       <CodeBlockBody showLineNumbers={showLineNumbers} tokenized={tokenized} />
     </div>
   )
