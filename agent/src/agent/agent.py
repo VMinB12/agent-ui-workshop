@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import io
-import json
 from contextlib import redirect_stdout
 from pathlib import Path
 
@@ -58,9 +57,9 @@ def display(sql_query: str) -> pydantic_ai.ToolReturn:
         with _connect() as conn:
             relation = conn.sql(sql_query)
             columns = list(relation.columns)
-            rows = json.loads(relation.pl().write_json(file=None))
-    except Exception as e:
-        raise pydantic_ai.ModelRetry(f'Failed to run SQL query: {e}') from e
+            rows = [dict(zip(columns, row, strict=True)) for row in relation.fetchall()]
+    except Exception as error:
+        raise pydantic_ai.ModelRetry(f'Failed to run SQL query: {error}') from error
 
     return pydantic_ai.ToolReturn(
         return_value='Query result displayed to user',

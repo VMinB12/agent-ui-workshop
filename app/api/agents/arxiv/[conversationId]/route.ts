@@ -3,19 +3,19 @@ import { convertToModelMessages, createUIMessageStream, createUIMessageStreamRes
 import { createArxivAgent } from '@/lib/arxiv-agent'
 import type { WorkshopUIMessage } from '@/lib/chat-types'
 
-export async function POST(_request: Request) {
-  const { messages }: { messages: WorkshopUIMessage[] } = await _request.json()
+export async function POST(request: Request) {
+  const { messages }: { messages: WorkshopUIMessage[] } = await request.json()
 
-  const stream = createUIMessageStream<WorkshopUIMessage>({
-    execute: async ({ writer }) => {
-      const agent = createArxivAgent(writer)
-      const result = await agent.stream({
-        messages: await convertToModelMessages(messages, { tools: agent.tools }),
-      })
+  return createUIMessageStreamResponse({
+    stream: createUIMessageStream<WorkshopUIMessage>({
+      execute: async ({ writer }) => {
+        const agent = createArxivAgent(writer)
+        const result = await agent.stream({
+          messages: await convertToModelMessages(messages, { tools: agent.tools }),
+        })
 
-      writer.merge(result.toUIMessageStream({ sendReasoning: true }))
-    },
+        writer.merge(result.toUIMessageStream({ sendReasoning: true }))
+      },
+    }),
   })
-
-  return createUIMessageStreamResponse({ stream })
 }
