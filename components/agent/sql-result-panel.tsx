@@ -3,9 +3,13 @@
 'use no memo'
 
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table'
-import { useMemo } from 'react'
+import { ChevronDownIcon } from 'lucide-react'
+import { useMemo, useState } from 'react'
 
+import { Button } from '@/components/ui/button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import type { SqlResultData, SqlResultRow } from '@/lib/chat-types'
+import { cn } from '@/lib/utils'
 
 const formatCellValue = (value: unknown) => {
   if (value == null) {
@@ -35,6 +39,8 @@ const EmptyState = () => (
 )
 
 export const SqlResultPanel = ({ result }: { result: SqlResultData | null }) => {
+  const [isSqlExpanded, setIsSqlExpanded] = useState(false)
+
   const columns = useMemo<ColumnDef<SqlResultRow>[]>(() => {
     if (!result) {
       return []
@@ -67,12 +73,26 @@ export const SqlResultPanel = ({ result }: { result: SqlResultData | null }) => 
           <span className="text-border">•</span>
           <span>{result.column_count} columns</span>
         </div>
-        <div>
-          <p className="mb-2 text-xs font-medium tracking-[0.08em] text-muted-foreground">Executed SQL</p>
-          <pre className="overflow-x-auto rounded-2xl border border-border/70 bg-muted/55 p-3 font-mono text-sm text-foreground/90">
-            {result.sql_query}
-          </pre>
-        </div>
+        <Collapsible open={isSqlExpanded} onOpenChange={setIsSqlExpanded}>
+          <div className="rounded-2xl border border-border/70 bg-muted/35 px-3 py-2">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground">Executed SQL</p>
+              <CollapsibleTrigger asChild>
+                <Button className="gap-1.5 text-muted-foreground" size="xs" type="button" variant="ghost">
+                  {isSqlExpanded ? 'Hide query' : 'Show query'}
+                  <ChevronDownIcon
+                    className={cn('size-3.5 transition-transform', isSqlExpanded ? 'rotate-180' : '')}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent className="pt-2">
+              <pre className="overflow-x-auto bg-muted/55 p-3 font-mono text-sm text-foreground/90">
+                {result.sql_query}
+              </pre>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
       </div>
 
       <div className="overflow-x-auto rounded-2xl border border-border/80 bg-background/65">
