@@ -11,6 +11,11 @@
       "sourceType": "github",
       "computedHash": "58ce68f628890c3925aea2b5435a649251ac182057541045c68fc19a27aaa0ec"
     },
+    "code-simplifier": {
+      "source": "getsentry/skills",
+      "sourceType": "github",
+      "computedHash": "ff9cb10181e31daf1f1644754c491601a7849dff4b4536a1d0ec4f97f680348e"
+    },
     "frontend-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
