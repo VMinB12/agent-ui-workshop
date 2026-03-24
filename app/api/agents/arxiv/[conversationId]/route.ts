@@ -13,7 +13,7 @@ export async function POST(_request: Request) {
         messages: await convertToModelMessages(messages, { tools: agent.tools }),
       })
 
-      writer.merge(result.toUIMessageStream())
+      writer.merge(result.toUIMessageStream({ sendReasoning: true }))
     },
   })
 

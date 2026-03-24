@@ -1,4 +1,4 @@
-import type { FileUIPart, TextUIPart, UIMessage } from 'ai'
+import type { FileUIPart, ReasoningUIPart, TextUIPart, UIMessage } from 'ai'
 
 import type { ToolPart } from '@/components/ai-elements/tool'
 
@@ -16,6 +16,9 @@ const isRecord = (value: unknown): value is Record<string, unknown> => typeof va
 
 export const isTextPart = (part: unknown): part is TextUIPart =>
   isRecord(part) && part.type === 'text' && typeof part.text === 'string'
+
+export const isReasoningPart = (part: unknown): part is ReasoningUIPart =>
+  isRecord(part) && part.type === 'reasoning' && typeof part.text === 'string'
 
 export const isFilePart = (part: unknown): part is FileUIPart =>
   isRecord(part) &&
@@ -37,4 +40,7 @@ export const isToolPart = (part: unknown): part is ToolPart =>
 export const getMessageFileParts = (message: UIMessage): Array<FileUIPart & { id: string }> =>
   message.parts.filter(isFilePart).map((part, index) => ({ ...part, id: `${message.id}-file-${index}` }))
 
-export const getMessageContentParts = (message: UIMessage) => message.parts.filter((part) => !isFilePart(part))
+export const getMessageReasoningParts = (message: UIMessage) => message.parts.filter(isReasoningPart)
+
+export const getMessageContentParts = (message: UIMessage) =>
+  message.parts.filter((part) => !isFilePart(part) && !isReasoningPart(part))

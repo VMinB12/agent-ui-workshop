@@ -1,4 +1,4 @@
-import { openai } from '@ai-sdk/openai'
+import { openai, type OpenAILanguageModelResponsesOptions } from '@ai-sdk/openai'
 import { ToolLoopAgent, stepCountIs, tool, type UIMessageStreamWriter } from 'ai'
 import { z } from 'zod'
 
@@ -26,6 +26,11 @@ Rules:
 export const createArxivAgent = (writer: UIMessageStreamWriter<WorkshopUIMessage>) =>
   new ToolLoopAgent({
     model: openai('gpt-5-mini'),
+    providerOptions: {
+      openai: {
+        reasoningSummary: 'auto',
+      } satisfies OpenAILanguageModelResponsesOptions,
+    },
     instructions,
     stopWhen: stepCountIs(6),
     tools: {

@@ -5,10 +5,11 @@ import type { ChatStatus, UIMessage } from 'ai'
 import { Attachment, AttachmentInfo, AttachmentPreview, Attachments } from '@/components/ai-elements/attachments'
 import { Message, MessageContent } from '@/components/ai-elements/message'
 import { Persona, type PersonaState } from '@/components/ai-elements/persona'
+import { Reasoning, ReasoningContent, ReasoningTrigger } from '@/components/ai-elements/reasoning'
 import { cn } from '@/lib/utils'
 
 import { ChatMessagePart } from './chat-message-part'
-import { getMessageContentParts, getMessageFileParts } from './chat-message-parts'
+import { getMessageContentParts, getMessageFileParts, getMessageReasoningParts } from './chat-message-parts'
 
 type ChatMessageRowProps = {
   message: UIMessage
@@ -35,9 +36,13 @@ const MessageFileAttachments = ({ files }: { files: ReturnType<typeof getMessage
 
 export const ChatMessageRow = ({ message, status, isLastAssistantMessage }: ChatMessageRowProps) => {
   const fileParts = getMessageFileParts(message)
+  const reasoningParts = getMessageReasoningParts(message)
   const contentParts = getMessageContentParts(message)
   const isAssistant = message.role !== 'user'
   const assistantPersonaState: PersonaState = status === 'streaming' && isLastAssistantMessage ? 'streaming' : 'idle'
+  const reasoningText = reasoningParts.map((part) => part.text).join('\n\n')
+  const isReasoningStreaming =
+    isAssistant && isLastAssistantMessage && status === 'streaming' && reasoningParts.length > 0
 
   return (
     <div className={cn('flex gap-2', isAssistant ? 'items-start' : 'items-end justify-end')}>
@@ -62,6 +67,12 @@ export const ChatMessageRow = ({ message, status, isLastAssistantMessage }: Chat
             isAssistant ? 'border-none bg-transparent px-0 py-0' : 'chat-user-bubble text-chat-user-foreground',
           )}
         >
+          {isAssistant && reasoningText ? (
+            <Reasoning className="w-full max-w-full" isStreaming={isReasoningStreaming}>
+              <ReasoningTrigger />
+              <ReasoningContent>{reasoningText}</ReasoningContent>
+            </Reasoning>
+          ) : null}
           {contentParts.map((part, index) => (
             <ChatMessagePart
               isAssistant={isAssistant}
