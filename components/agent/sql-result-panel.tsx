@@ -60,7 +60,7 @@ export const SqlResultPanel = ({ result }: { result: SqlResultData | null }) => 
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4 rounded-3xl border border-border/80 bg-card p-4 shadow-sm">
+    <div className="flex min-w-0 flex-col gap-4 rounded-3xl border border-border/80 bg-card p-4 shadow-sm">
       <div className="space-y-3 border-b border-border/80 pb-4">
         <div className="flex flex-wrap items-center gap-2 text-xs font-medium tracking-[0.08em] text-muted-foreground">
           <span>{result.row_count} rows</span>
@@ -75,9 +75,9 @@ export const SqlResultPanel = ({ result }: { result: SqlResultData | null }) => 
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto rounded-2xl border border-border/80 bg-background/65">
+      <div className="overflow-x-auto rounded-2xl border border-border/80 bg-background/65">
         <table className="min-w-full border-collapse text-left text-sm">
-          <thead className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm">
+          <thead className="bg-card/95">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr className="border-b border-border/80" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (

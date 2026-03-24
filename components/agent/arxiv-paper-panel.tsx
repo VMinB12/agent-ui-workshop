@@ -30,8 +30,8 @@ export const ArxivPaperPanel = ({
   const selectedPaper = state.papers.find((paper) => paper.id === state.selectedPaperId) ?? state.papers[0]
 
   return (
-    <div className="grid h-full min-h-0 gap-4 lg:grid-cols-[minmax(18rem,24rem)_1fr]">
-      <div className="flex min-h-[16rem] flex-col border border-border/80 bg-card/70">
+    <div className="grid h-full min-h-0 min-w-0 gap-4 overflow-hidden lg:grid-cols-[minmax(18rem,24rem)_1fr]">
+      <div className="flex min-h-0 min-w-0 flex-col overflow-hidden border border-border/80 bg-card/70">
         <div className="border-b border-border/80 px-4 py-3">
           <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary/90">Paper Shelf</p>
           <p className="mt-1 text-xs text-muted-foreground">{state.papers.length} papers discovered in this session</p>
@@ -69,7 +69,7 @@ export const ArxivPaperPanel = ({
         </div>
       </div>
 
-      <div className="flex min-h-[24rem] min-w-0 flex-col border border-border/80 bg-card/70">
+      <div className="flex min-h-0 min-w-0 flex-col overflow-hidden border border-border/80 bg-card/70">
         <div className="border-b border-border/80 px-4 py-3">
           <div className="flex items-start justify-between gap-4">
             <div>

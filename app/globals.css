@@ -200,12 +200,20 @@
     background: linear-gradient(180deg, oklch(1 0 0 / 0.45), transparent 24%);
   }
 
+  .chat-panel-footer {
+    margin-top: -1px;
+    border-top: 0;
+    background: transparent;
+    position: relative;
+    z-index: 1;
+  }
+
   .chat-composer {
-    @apply mt-4 p-3 sm:p-4;
-    background: linear-gradient(180deg, var(--chat-surface-strong), color-mix(in oklab, var(--card) 96%, white 4%));
-    border: 1px solid color-mix(in oklab, var(--border) 92%, transparent);
-    border-radius: calc(var(--radius) + 0.35rem);
-    box-shadow: var(--chat-shadow-soft);
+    @apply mt-0 p-0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .chat-input {
@@ -254,12 +262,6 @@
   .chat-assistant-copy {
     @apply leading-7 text-[0.98rem];
     color: color-mix(in oklab, var(--foreground) 94%, var(--muted-foreground) 6%);
-  }
-
-  .chat-empty-state {
-    @apply rounded-2xl px-8 py-12;
-    background: linear-gradient(180deg, color-mix(in oklab, var(--accent) 45%, white 55%), transparent 85%);
-    border: 1px dashed color-mix(in oklab, var(--border) 92%, transparent);
   }
 
   .chat-scroll-button {

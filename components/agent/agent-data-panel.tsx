@@ -24,7 +24,7 @@ export const AgentDataPanel = ({
         </h2>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-hidden">
+      <div className="min-h-0 min-w-0 flex-1 overflow-auto">
         {activeAgent.dataPanel.render({ state: panelState, updateState: setPanelState })}
       </div>
     </div>

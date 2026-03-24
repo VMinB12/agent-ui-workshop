@@ -28,6 +28,7 @@ import {
 import { Suggestion, Suggestions } from '@/components/ai-elements/suggestion'
 
 type ChatPromptProps = {
+  isConversationEmpty: boolean
   status: ChatStatus
   onStop: () => void
   onSubmit: (message: PromptInputMessage) => Promise<void> | void
@@ -80,11 +81,11 @@ const PromptInputSubmitControl = ({
   )
 }
 
-export const ChatPrompt = ({ status, onStop, onSubmit, starterSuggestions }: ChatPromptProps) => {
+export const ChatPrompt = ({ isConversationEmpty, status, onStop, onSubmit, starterSuggestions }: ChatPromptProps) => {
   const [input, setInput] = useState('')
   const [hasDismissedSuggestions, setHasDismissedSuggestions] = useState(false)
   const isGenerating = status === 'submitted' || status === 'streaming'
-  const shouldShowSuggestions = starterSuggestions.length > 0 && !hasDismissedSuggestions
+  const shouldShowSuggestions = isConversationEmpty && starterSuggestions.length > 0 && !hasDismissedSuggestions
 
   const handleSuggestionClick = useCallback(
     (suggestion: string) => {
@@ -111,7 +112,7 @@ export const ChatPrompt = ({ status, onStop, onSubmit, starterSuggestions }: Cha
   return (
     <div className="shrink-0">
       {shouldShowSuggestions ? (
-        <Suggestions className="mb-3 px-1 pb-1">
+        <Suggestions className="mb-3 flex-wrap px-1 pb-1">
           {starterSuggestions.map((suggestion) => (
             <Suggestion
               className="rounded-full border-border bg-card px-4 py-2 text-sm text-foreground shadow-sm hover:border-primary/35 hover:bg-accent"
