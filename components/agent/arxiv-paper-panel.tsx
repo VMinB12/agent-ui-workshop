@@ -5,8 +5,21 @@ import { ExternalLinkIcon, FileTextIcon } from 'lucide-react'
 import type { ArxivPanelState } from '@/lib/chat-types'
 import { cn } from '@/lib/utils'
 
+const PDF_VIEWER_HASH = 'view=FitH&zoom=page-width&pagemode=none'
+
+const buildPdfPreviewUrl = (pdfUrl: string) => {
+  try {
+    const url = new URL(pdfUrl)
+    url.hash = PDF_VIEWER_HASH
+
+    return url.toString()
+  } catch {
+    return `${pdfUrl.split('#')[0]}#${PDF_VIEWER_HASH}`
+  }
+}
+
 const EmptyState = () => (
-  <div className="flex h-full min-h-[18rem] items-center justify-center border border-border/80 bg-card/70 px-6 text-center">
+  <div className="flex h-full min-h-72 items-center justify-center border border-border/80 bg-card/70 px-6 text-center">
     <div className="max-w-sm space-y-2">
       <p className="font-mono text-lg uppercase tracking-[0.18em] text-primary/90">Paper Shelf Is Empty</p>
       <p className="text-sm text-muted-foreground">
@@ -28,9 +41,10 @@ export const ArxivPaperPanel = ({
   }
 
   const selectedPaper = state.papers.find((paper) => paper.id === state.selectedPaperId) ?? state.papers[0]
+  const pdfPreviewUrl = selectedPaper.pdfUrl ? buildPdfPreviewUrl(selectedPaper.pdfUrl) : null
 
   return (
-    <div className="grid h-full min-h-0 min-w-0 gap-4 overflow-hidden lg:grid-cols-[minmax(18rem,24rem)_1fr]">
+    <div className="grid h-full min-h-0 min-w-0 gap-4 overflow-hidden lg:grid-cols-[minmax(16rem,20rem)_1fr]">
       <div className="flex min-h-0 min-w-0 flex-col overflow-hidden border border-border/80 bg-card/70">
         <div className="border-b border-border/80 px-4 py-3">
           <p className="font-mono text-sm uppercase tracking-[0.18em] text-primary/90">Paper Shelf</p>
@@ -69,32 +83,24 @@ export const ArxivPaperPanel = ({
         </div>
       </div>
 
-      <div className="flex min-h-0 min-w-0 flex-col overflow-hidden border border-border/80 bg-card/70">
-        <div className="border-b border-border/80 px-4 py-3">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.16em] text-primary/80">Selected Paper</p>
-              <h3 className="mt-1 text-base leading-snug">{selectedPaper.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{selectedPaper.authors.join(', ')}</p>
-            </div>
-            {selectedPaper.entryUrl ? (
-              <a
-                className="inline-flex items-center gap-1 text-xs uppercase tracking-[0.16em] text-primary/85 hover:text-primary"
-                href={selectedPaper.entryUrl}
-                rel="noreferrer"
-                target="_blank"
-              >
-                Open Entry
-                <ExternalLinkIcon className="size-3.5" />
-              </a>
-            ) : null}
-          </div>
-        </div>
+      <div className="relative flex min-h-0 min-w-0 flex-col overflow-hidden border border-border/80 bg-card/70">
+        {selectedPaper.entryUrl ? (
+          <a
+            className="absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-full border border-border/80 bg-background/92 px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-primary/85 shadow-sm backdrop-blur hover:text-primary"
+            href={selectedPaper.entryUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            Open Entry
+            <ExternalLinkIcon className="size-3.5" />
+          </a>
+        ) : null}
 
-        {selectedPaper.pdfUrl ? (
+        {pdfPreviewUrl ? (
           <iframe
-            className="min-h-0 flex-1 bg-background"
-            src={selectedPaper.pdfUrl}
+            className="min-h-0 w-full flex-1 bg-background"
+            loading="lazy"
+            src={pdfPreviewUrl}
             title={`PDF preview for ${selectedPaper.id}`}
           />
         ) : (
