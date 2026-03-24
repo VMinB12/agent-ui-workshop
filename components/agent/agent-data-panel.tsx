@@ -17,9 +17,9 @@ export const AgentDataPanel = ({
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="mb-3 pl-5 pr-1">
-        <p className="font-mono text-[0.72rem] uppercase tracking-[0.22em] text-primary/80">Data Panel</p>
-        <h2 className="mt-1 font-mono text-2xl uppercase tracking-[0.12em] text-primary">
+      <div className="mb-3 px-1">
+        <p className="text-xs font-medium tracking-[0.08em] text-muted-foreground">Supporting panel</p>
+        <h2 className="mt-1 text-2xl font-semibold tracking-[-0.02em] text-foreground">
           {activeAgent.dataPanel.title}
         </h2>
       </div>

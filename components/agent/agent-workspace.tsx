@@ -25,11 +25,11 @@ export const AgentWorkspace = ({ chatPane, dataPane, hasDataPanel }: AgentWorksp
       <div className="hidden h-full min-h-0 lg:block">
         <ResizablePanelGroup className="min-h-0" orientation="horizontal">
           <ResizablePanel defaultSize={56} minSize={36}>
-            <div className="h-full min-h-0 overflow-hidden">{chatPane}</div>
+            <div className="h-full min-h-0 overflow-hidden pr-3">{chatPane}</div>
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={44} minSize={28}>
-            <div className="h-full min-h-0 overflow-hidden">{dataPane}</div>
+            <div className="h-full min-h-0 overflow-hidden pl-3">{dataPane}</div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

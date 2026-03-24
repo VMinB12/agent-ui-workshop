@@ -23,9 +23,9 @@ export const ChatMessageList = ({ messages, status, lastAssistantMessageId }: Ch
     <ConversationContent>
       {messages.length === 0 ? (
         <ConversationEmptyState
-          description="Ask a question to begin chatting with the agent."
+          description="Use the prompt below to explore the selected agent and its connected tools."
           icon={<MessageSquareIcon className="size-10" />}
-          title="Start a conversation"
+          title="Start with a prompt"
         />
       ) : null}
 

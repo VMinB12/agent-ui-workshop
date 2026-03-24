@@ -24,8 +24,8 @@ const MessageFileAttachments = ({ files }: { files: ReturnType<typeof getMessage
   return (
     <Attachments className="mt-3 w-full" variant="list">
       {files.map((file) => (
-        <Attachment className="!rounded-none bg-background/55" data={file} key={file.id}>
-          <AttachmentPreview className="!rounded-none" />
+        <Attachment className="rounded-2xl border-border/80 bg-background/70" data={file} key={file.id}>
+          <AttachmentPreview className="rounded-xl" />
           <AttachmentInfo showMediaType />
         </Attachment>
       ))}
@@ -45,7 +45,7 @@ export const ChatMessageRow = ({ message, status, isLastAssistantMessage }: Chat
         isLastAssistantMessage ? (
           <Persona
             className={cn(
-              'size-5 shrink-0 brightness-[0.55] contrast-150 saturate-0 transition-transform duration-300 dark:brightness-125 dark:contrast-110',
+              'size-5 shrink-0 opacity-75 transition-transform duration-300 dark:opacity-90',
               assistantPersonaState === 'streaming' ? 'scale-110' : 'scale-100',
             )}
             state={assistantPersonaState}

@@ -24,9 +24,9 @@ const formatCellValue = (value: unknown) => {
 }
 
 const EmptyState = () => (
-  <div className="flex h-full min-h-[18rem] items-center justify-center border border-border/80 bg-card/70 px-6 text-center">
+  <div className="flex h-full min-h-72 items-center justify-center rounded-3xl border border-border/80 bg-card px-6 text-center shadow-sm">
     <div className="max-w-sm space-y-2">
-      <p className="font-mono text-lg uppercase tracking-[0.18em] text-primary/90">Awaiting Query Result</p>
+      <p className="text-lg font-semibold tracking-[-0.02em] text-foreground">Awaiting query result</p>
       <p className="text-sm text-muted-foreground">
         When the SQL agent calls the display tool, the structured result set will appear here.
       </p>
@@ -60,29 +60,29 @@ export const SqlResultPanel = ({ result }: { result: SqlResultData | null }) => 
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4 border border-border/80 bg-card/70 p-4">
+    <div className="flex h-full min-h-0 flex-col gap-4 rounded-3xl border border-border/80 bg-card p-4 shadow-sm">
       <div className="space-y-3 border-b border-border/80 pb-4">
-        <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.18em] text-primary/80">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-medium tracking-[0.08em] text-muted-foreground">
           <span>{result.row_count} rows</span>
-          <span className="text-border">/</span>
+          <span className="text-border">•</span>
           <span>{result.column_count} columns</span>
         </div>
         <div>
-          <p className="mb-2 text-[0.72rem] uppercase tracking-[0.18em] text-muted-foreground">Executed SQL</p>
-          <pre className="overflow-x-auto border border-border/70 bg-background/60 p-3 font-mono text-sm text-foreground/90">
+          <p className="mb-2 text-xs font-medium tracking-[0.08em] text-muted-foreground">Executed SQL</p>
+          <pre className="overflow-x-auto rounded-2xl border border-border/70 bg-muted/55 p-3 font-mono text-sm text-foreground/90">
             {result.sql_query}
           </pre>
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto border border-border/80 bg-background/55">
+      <div className="min-h-0 flex-1 overflow-auto rounded-2xl border border-border/80 bg-background/65">
         <table className="min-w-full border-collapse text-left text-sm">
           <thead className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr className="border-b border-border/80" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
-                    className="min-w-40 border-r border-border/70 px-3 py-2 font-mono text-xs uppercase tracking-[0.16em] text-primary/85 last:border-r-0"
+                    className="min-w-40 border-r border-border/70 px-3 py-2 font-mono text-xs font-medium text-muted-foreground last:border-r-0"
                     key={header.id}
                   >
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}

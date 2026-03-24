@@ -114,7 +114,7 @@ export const ChatPrompt = ({ status, onStop, onSubmit, starterSuggestions }: Cha
         <Suggestions className="mb-3 px-1 pb-1">
           {starterSuggestions.map((suggestion) => (
             <Suggestion
-              className="rounded-none border-primary/35 bg-background/55 font-mono text-[0.72rem] uppercase tracking-[0.12em] text-primary/85 hover:border-primary/60 hover:bg-primary/12"
+              className="rounded-full border-border bg-card px-4 py-2 text-sm text-foreground shadow-sm hover:border-primary/35 hover:bg-accent"
               disabled={isGenerating}
               key={suggestion}
               onClick={handleSuggestionClick}
@@ -149,18 +149,18 @@ export const ChatPrompt = ({ status, onStop, onSubmit, starterSuggestions }: Cha
         </PromptInputHeader>
         <PromptInputBody>
           <PromptInputTextarea
-            className="min-h-12 text-sm placeholder:text-muted-foreground/80"
+            className="min-h-12 text-sm leading-6 placeholder:text-muted-foreground/80"
             disabled={isGenerating}
             onChange={handleInputChange}
-            placeholder="Enter command or question..."
+            placeholder="Ask a question or describe a task..."
             value={input}
           />
         </PromptInputBody>
         <PromptInputFooter>
           <PromptInputTools>
             <PromptInputActionMenu>
-              <PromptInputActionMenuTrigger className="rounded-none!" />
-              <PromptInputActionMenuContent className="rounded-none!">
+              <PromptInputActionMenuTrigger />
+              <PromptInputActionMenuContent>
                 <PromptInputActionAddAttachments />
               </PromptInputActionMenuContent>
             </PromptInputActionMenu>
