@@ -1,7 +1,5 @@
 import type { DataUIPart, UIMessage } from 'ai'
 
-export type AgentPanelKind = 'none' | 'sql' | 'arxiv'
-
 export type SqlResultRow = Record<string, unknown>
 
 export interface SqlResultData {
@@ -52,7 +50,8 @@ export const EMPTY_ARXIV_PANEL_STATE: ArxivPanelState = {
 }
 
 export const mergeArxivPapers = (existingPapers: ArxivPaper[], incomingPapers: ArxivPaper[]): ArxivPaper[] => {
-  const mergedPapers = new Map(existingPapers.map((paper) => [paper.id, paper]))
+  const existingPaperById = new Map(existingPapers.map((paper) => [paper.id, paper]))
+  const mergedPapers = new Map(existingPaperById)
 
   for (const paper of incomingPapers) {
     const existingPaper = mergedPapers.get(paper.id)
@@ -70,7 +69,7 @@ export const mergeArxivPapers = (existingPapers: ArxivPaper[], incomingPapers: A
 
   return [...existingPapers]
     .map((paper) => mergedPapers.get(paper.id) ?? paper)
-    .concat(incomingPapers.filter((paper) => !existingPapers.some((existingPaper) => existingPaper.id === paper.id)))
+    .concat(incomingPapers.filter((paper) => !existingPaperById.has(paper.id)))
 }
 
 export const isSqlResultDataPart = (

@@ -12,11 +12,8 @@ def create_chat_router(
 ) -> APIRouter:
     router = APIRouter()
 
-    @router.post('/chat/{conversation_id}')
-    async def post_chat(
-        request: Request,
-        conversation_id: str,
-    ) -> StreamingResponse:
+    @router.post('/chat')
+    async def post_chat(request: Request) -> StreamingResponse:
         adapter = await VercelAIAdapter.from_request(
             request,
             agent=agent,

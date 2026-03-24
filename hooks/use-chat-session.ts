@@ -2,35 +2,20 @@
 
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
-import { nanoid } from 'nanoid'
 import { useQueryState } from 'nuqs'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import {
-  AGENT_CONVERSATION_QUERY_PARAMS,
-  agentDefinitions,
-  agentList,
-  DEFAULT_AGENT_ID,
-  isAgentId,
-  type AgentId,
-} from '@/lib/agents'
+import { agentDefinitions, agentList, DEFAULT_AGENT_ID, isAgentId, type AgentId } from '@/lib/agents'
 import type { WorkshopDataPart, WorkshopUIMessage } from '@/lib/chat-types'
 
 export const useChatSession = () => {
   const [agentIdParam, setAgentIdParam] = useQueryState('agent')
-  const [sqlConversationIdParam, setSqlConversationIdParam] = useQueryState(AGENT_CONVERSATION_QUERY_PARAMS.sql)
-  const [arxivConversationIdParam, setArxivConversationIdParam] = useQueryState(AGENT_CONVERSATION_QUERY_PARAMS.arxiv)
-  const [panelStateByConversation, setPanelStateByConversation] = useState<Record<string, unknown>>({})
+  const [panelStateByAgent, setPanelStateByAgent] = useState<Partial<Record<AgentId, unknown>>>({})
 
   const agentId = isAgentId(agentIdParam) ? agentIdParam : DEFAULT_AGENT_ID
-  const sqlConversationId = useMemo(() => sqlConversationIdParam ?? `sql-${nanoid(8)}`, [sqlConversationIdParam])
-  const arxivConversationId = useMemo(
-    () => arxivConversationIdParam ?? `arxiv-${nanoid(8)}`,
-    [arxivConversationIdParam],
-  )
   const activeAgent = agentDefinitions[agentId]
-  const conversationId = agentId === 'sql' ? sqlConversationId : arxivConversationId
-  const conversationKey = `${agentId}:${conversationId}`
+  const activeDataPanel = activeAgent.dataPanel
+  const endpoint = activeAgent.buildEndpoint()
 
   useEffect(() => {
     if (!isAgentId(agentIdParam)) {
@@ -40,81 +25,48 @@ export const useChatSession = () => {
     }
   }, [agentIdParam, setAgentIdParam])
 
-  useEffect(() => {
-    if (!sqlConversationIdParam) {
-      void setSqlConversationIdParam(sqlConversationId, {
-        history: 'replace',
-      })
-    }
-  }, [sqlConversationId, sqlConversationIdParam, setSqlConversationIdParam])
-
-  useEffect(() => {
-    if (!arxivConversationIdParam) {
-      void setArxivConversationIdParam(arxivConversationId, {
-        history: 'replace',
-      })
-    }
-  }, [arxivConversationId, arxivConversationIdParam, setArxivConversationIdParam])
-
-  const endpoint = useMemo(() => activeAgent.buildEndpoint(conversationId), [activeAgent, conversationId])
-
   const updatePanelState = useCallback(
     (dataPart: WorkshopDataPart) => {
-      const dataPanel = activeAgent.dataPanel
-
-      if (!dataPanel) {
+      if (!activeDataPanel) {
         return
       }
 
-      setPanelStateByConversation((currentPanelState) => ({
+      setPanelStateByAgent((currentPanelState) => ({
         ...currentPanelState,
-        [conversationKey]: dataPanel.applyDataPart(
-          currentPanelState[conversationKey] ?? dataPanel.createState(),
+        [agentId]: activeDataPanel.applyDataPart(
+          currentPanelState[agentId] ?? activeDataPanel.createState(),
           dataPart,
         ),
       }))
     },
-    [activeAgent, conversationKey],
+    [activeDataPanel, agentId],
   )
 
   const { messages, sendMessage, stop, status, error } = useChat<WorkshopUIMessage>({
-    id: conversationId,
+    id: agentId,
     transport: new DefaultChatTransport({ api: endpoint }),
     onData: (dataPart) => updatePanelState(dataPart as WorkshopDataPart),
   })
 
-  const lastAssistantMessageId = useMemo(() => {
-    for (let i = messages.length - 1; i >= 0; i -= 1) {
-      if (messages[i].role !== 'user') {
-        return messages[i].id
-      }
-    }
-
-    return null
-  }, [messages])
+  const lastAssistantMessageId = messages.findLast((message) => message.role !== 'user')?.id ?? null
 
   const activePanelState = useMemo(
-    () =>
-      activeAgent.dataPanel
-        ? (panelStateByConversation[conversationKey] ?? activeAgent.dataPanel.createState())
-        : null,
-    [activeAgent, conversationKey, panelStateByConversation],
+    () => (activeDataPanel ? (panelStateByAgent[agentId] ?? activeDataPanel.createState()) : null),
+    [activeDataPanel, agentId, panelStateByAgent],
   )
 
   const setActivePanelState = useCallback(
     (updater: (state: unknown) => unknown) => {
-      const dataPanel = activeAgent.dataPanel
-
-      if (!dataPanel) {
+      if (!activeDataPanel) {
         return
       }
 
-      setPanelStateByConversation((currentPanelState) => ({
+      setPanelStateByAgent((currentPanelState) => ({
         ...currentPanelState,
-        [conversationKey]: updater(currentPanelState[conversationKey] ?? dataPanel.createState()),
+        [agentId]: updater(currentPanelState[agentId] ?? activeDataPanel.createState()),
       }))
     },
-    [activeAgent, conversationKey],
+    [activeDataPanel, agentId],
   )
 
   const setAgentId = useCallback(

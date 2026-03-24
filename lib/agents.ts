@@ -41,7 +41,7 @@ export type AgentDataPanelContract = {
 
 const defineAgentDataPanel = <TState>(definition: AgentDataPanelDefinition<TState>): AgentDataPanelContract => ({
   title: definition.title,
-  createState: () => definition.createState(),
+  createState: definition.createState,
   applyDataPart: (state, dataPart) => definition.applyDataPart(state as TState, dataPart),
   render: ({ state, updateState }) =>
     definition.render({
@@ -55,16 +55,11 @@ export interface AgentDefinition {
   name: string
   description: string
   starterSuggestions: string[]
-  buildEndpoint: (conversationId: string) => string
+  buildEndpoint: () => string
   dataPanel?: AgentDataPanelContract
 }
 
 export const DEFAULT_AGENT_ID: AgentId = 'sql'
-
-export const AGENT_CONVERSATION_QUERY_PARAMS: Record<AgentId, string> = {
-  sql: 'sqlConversationId',
-  arxiv: 'arxivConversationId',
-}
 
 export const agentDefinitions: Record<AgentId, AgentDefinition> = {
   sql: {
@@ -75,7 +70,7 @@ export const agentDefinitions: Record<AgentId, AgentDefinition> = {
       'Display the top 5 artists by sales.',
       'Who is the best rock artist and how many songs do they have?',
     ],
-    buildEndpoint: (conversationId) => `${CHAT_API_BASE}/sql/chat/${conversationId}`,
+    buildEndpoint: () => `${CHAT_API_BASE}/sql/chat`,
     dataPanel: defineAgentDataPanel<SqlResultData | null>({
       title: 'Query Result',
       createState: () => null,
@@ -91,10 +86,10 @@ export const agentDefinitions: Record<AgentId, AgentDefinition> = {
       'Find me an interesting paper on the attention mechanism',
       'What is the latest development on RAG systems?',
     ],
-    buildEndpoint: (conversationId) => `/api/agents/arxiv/${conversationId}`,
+    buildEndpoint: () => '/api/agents/arxiv',
     dataPanel: defineAgentDataPanel<ArxivPanelState>({
       title: 'Paper Browser',
-      createState: () => ({ ...EMPTY_ARXIV_PANEL_STATE, papers: [] }),
+      createState: () => ({ ...EMPTY_ARXIV_PANEL_STATE }),
       applyDataPart: (state, dataPart) => {
         if (isArxivSearchResultsDataPart(dataPart)) {
           const papers = mergeArxivPapers(state.papers, dataPart.data.papers)
