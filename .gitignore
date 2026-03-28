@@ -46,5 +46,9 @@ next-env.d.ts
 **/*.pyo
 **/*.pyd
 
-# skills
-.agents
+# skills (externally fetched by skills-lock.json)
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/implement-ai-sdk-agent/
+!.agents/skills/implement-pydantic-ai-agent/
