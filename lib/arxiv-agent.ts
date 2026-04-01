@@ -15,7 +15,7 @@ Rules:
 - Use the fetched PDF when the user asks detailed questions about a paper.
 - Do not claim to have read a PDF unless you actually fetched it in the current turn.
 - Keep answers concise but useful.
-- Make no more than 3 searches in parallel and no more than 2 fetches in parallel.`
+- Don't make excessive use of the search tool, one search per user question should be enough.`
 
 export const createArxivAgent = (writer: UIMessageStreamWriter<WorkshopUIMessage>) =>
   new ToolLoopAgent({
