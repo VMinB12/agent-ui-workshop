@@ -9,6 +9,7 @@ type FetchedArxivPaper = Awaited<ReturnType<typeof fetchArxivPaper>>
 
 type ArxivFetchResult = {
   paper: FetchedArxivPaper
+  pdfBase64: string
 }
 
 const instructions = `You are an arXiv research assistant.
@@ -74,32 +75,33 @@ export const createArxivAgent = (writer: UIMessageStreamWriter<WorkshopUIMessage
             transient: true,
           })
 
-          return { paper }
-        },
-        toModelOutput: ({ output }) => {
-          const pdfUrl = output.paper.pdfUrl ?? `https://arxiv.org/pdf/${output.paper.id}.pdf`
+          const pdfUrl = paper.pdfUrl ?? `https://arxiv.org/pdf/${paper.id}.pdf`
+          const pdfResponse = await fetch(pdfUrl)
 
-          return {
-            type: 'content',
-            value: [
-              {
-                type: 'text',
-                text: `Fetched arXiv paper ${output.paper.id}: ${output.paper.title}. Authors: ${output.paper.authors.join(', ')}. Abstract: ${output.paper.abstract}`,
-              },
-              {
-                data: pdfUrl,
-                filename: `${output.paper.id}.pdf`,
-                mediaType: 'application/pdf',
-                type: 'file',
-              } as unknown as {
-                type: 'file-data'
-                data: string
-                mediaType: string
-                filename?: string
-              },
-            ],
+          if (!pdfResponse.ok) {
+            throw new Error(`Failed to download PDF for ${paper.id}: ${pdfResponse.status}`)
           }
+
+          const pdfBuffer = await pdfResponse.arrayBuffer()
+          const pdfBase64 = Buffer.from(pdfBuffer).toString('base64')
+
+          return { paper, pdfBase64 }
         },
+        toModelOutput: ({ output }) => ({
+          type: 'content',
+          value: [
+            {
+              type: 'text',
+              text: `Fetched arXiv paper ${output.paper.id}: ${output.paper.title}. Authors: ${output.paper.authors.join(', ')}. Abstract: ${output.paper.abstract}`,
+            },
+            {
+              type: 'file-data',
+              data: output.pdfBase64,
+              mediaType: 'application/pdf',
+              filename: `${output.paper.id}.pdf`,
+            },
+          ],
+        }),
       }),
     },
   })
