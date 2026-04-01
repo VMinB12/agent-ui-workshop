@@ -5,13 +5,6 @@ import { z } from 'zod'
 import { fetchArxivPaper, searchArxivPapers } from '@/lib/arxiv-api'
 import type { WorkshopUIMessage } from '@/lib/chat-types'
 
-type FetchedArxivPaper = Awaited<ReturnType<typeof fetchArxivPaper>>
-
-type ArxivFetchResult = {
-  paper: FetchedArxivPaper
-  pdfBase64: string
-}
-
 const instructions = `You are an arXiv research assistant.
 
 Help the user find relevant papers, summarize them faithfully, and fetch PDFs when deeper inspection is needed.
@@ -49,19 +42,10 @@ export const createArxivAgent = (writer: UIMessageStreamWriter<WorkshopUIMessage
             transient: true,
           })
 
-          return {
-            papers: papers.map((paper) => ({
-              id: paper.id,
-              title: paper.title,
-              authors: paper.authors,
-              abstract: paper.abstract,
-              year: paper.year,
-              pdfUrl: paper.pdfUrl,
-            })),
-          }
+          return { papers }
         },
       }),
-      fetch: tool<{ arxiv_id: string }, ArxivFetchResult>({
+      fetch: tool({
         description: 'Fetch a specific arXiv paper PDF and make it available for detailed question answering.',
         inputSchema: z.object({
           arxiv_id: z.string().min(3).describe('The arXiv identifier, for example 1706.03762 or 1706.03762v7'),
